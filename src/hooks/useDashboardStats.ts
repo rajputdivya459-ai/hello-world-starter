@@ -68,7 +68,8 @@ export function useDashboardStats() {
       const totalExpenses = (expensesRes.data || []).reduce((sum: number, e: any) => sum + Number(e.amount), 0);
       const allMembers = membersRes.data || [];
       const activeMembers = allMembers.filter((m: any) => m.expiry_date >= today).length;
-      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
+      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= threeDaysFromNow).length;
+      const expiredMemberships = allMembers.filter((m: any) => m.expiry_date < today).length;
 
       return {
         monthlyRevenue,
