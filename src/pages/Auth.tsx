@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { db } from '@/integrations/supabase/db';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,8 +42,7 @@ export default function Auth() {
             throw new Error('Invalid email or password. Please try again.');
           }
           if (error.message.includes('Email not confirmed')) {
-            // Auto-resend confirmation or attempt direct login
-            throw new Error('Please check your email to confirm your account, or sign up again.');
+            throw new Error('Your email is not confirmed yet. Please check your inbox or sign up again.');
           }
           throw error;
         }
@@ -60,14 +60,32 @@ export default function Auth() {
         });
         if (error) throw error;
 
-        // If user is auto-confirmed (no email confirmation required), redirect
         if (data.session) {
+          // Auto-confirmed: the DB trigger creates profile, but we need to create gym & link it
+          const userId = data.user!.id;
+
+          // Create gym
+          const { data: gymData, error: gymErr } = await db
+            .from('gyms')
+            .insert({ name: gymName || 'My Gym' })
+            .select('id')
+            .single();
+
+          if (gymErr) {
+            console.error('Gym creation error:', gymErr);
+          } else {
+            // Update profile with gym_id and owner role
+            await db
+              .from('profiles')
+              .update({ gym_id: gymData.id, role: 'owner' })
+              .eq('user_id', userId);
+          }
+
           navigate('/app/dashboard');
         } else {
-          // If email confirmation is required, show message
           toast({
             title: 'Account created!',
-            description: 'Please check your email to confirm your account.',
+            description: 'Please check your email to confirm your account, then sign in.',
           });
         }
       }
@@ -102,62 +120,28 @@ export default function Auth() {
                 <>
                   <div className="space-y-2">
                     <Label htmlFor="fullName" className="text-sidebar-foreground">Full Name</Label>
-                    <Input
-                      id="fullName"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground"
-                      placeholder="John Doe"
-                      required
-                    />
+                    <Input id="fullName" value={fullName} onChange={(e) => setFullName(e.target.value)} className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground" placeholder="John Doe" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="gymName" className="text-sidebar-foreground">Gym Name</Label>
-                    <Input
-                      id="gymName"
-                      value={gymName}
-                      onChange={(e) => setGymName(e.target.value)}
-                      className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground"
-                      placeholder="My Awesome Gym"
-                    />
+                    <Input id="gymName" value={gymName} onChange={(e) => setGymName(e.target.value)} className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground" placeholder="My Awesome Gym" />
                   </div>
                 </>
               )}
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-sidebar-foreground">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground"
-                  placeholder="you@example.com"
-                  required
-                />
+                <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground" placeholder="you@example.com" required />
               </div>
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-sidebar-foreground">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground"
-                  placeholder="••••••••"
-                  required
-                  minLength={6}
-                />
+                <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="bg-sidebar border-sidebar-border text-sidebar-accent-foreground" placeholder="••••••••" required minLength={6} />
               </div>
               <Button type="submit" className="w-full" disabled={submitting}>
                 {submitting ? 'Loading...' : isLogin ? 'Sign In' : 'Sign Up'}
               </Button>
             </form>
             <div className="mt-4 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-primary hover:underline"
-              >
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-sm text-primary hover:underline">
                 {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
               </button>
             </div>
