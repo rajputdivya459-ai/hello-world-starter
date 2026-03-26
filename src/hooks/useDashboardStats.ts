@@ -20,7 +20,7 @@ export function useDashboardStats() {
   const now = new Date();
   const monthStart = format(startOfMonth(now), 'yyyy-MM-dd');
   const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
-  const sevenDaysFromNow = format(addDays(now, 7), 'yyyy-MM-dd');
+  const threeDaysFromNow = format(addDays(now, 3), 'yyyy-MM-dd');
   const today = format(now, 'yyyy-MM-dd');
 
   return useQuery({
