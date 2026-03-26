@@ -77,6 +77,7 @@ export function useDashboardStats() {
         profit: monthlyRevenue - totalExpenses,
         activeMembers,
         expiringMemberships,
+        expiredMemberships,
         pendingPayments: (pendingRes.data || []).length,
         newLeads: (leadsRes.data || []).length,
         recentPayments: (recentRes.data || []).map((p: any) => ({
