@@ -52,9 +52,16 @@ export default function Dashboard() {
     {
       title: 'Expiring Soon',
       value: s.expiringMemberships.toString(),
-      change: 'Next 7 days',
-      changeType: 'negative' as const,
+      change: 'Within 3 days',
+      changeType: s.expiringMemberships > 0 ? 'negative' as const : 'positive' as const,
       icon: Clock,
+    },
+    {
+      title: 'Expired',
+      value: (s.expiredMemberships ?? 0).toString(),
+      change: 'Need renewal',
+      changeType: (s.expiredMemberships ?? 0) > 0 ? 'negative' as const : 'positive' as const,
+      icon: AlertCircle,
     },
     {
       title: 'Pending Payments',
