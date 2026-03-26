@@ -9,6 +9,7 @@ export interface DashboardStats {
   profit: number;
   activeMembers: number;
   expiringMemberships: number;
+  expiredMemberships: number;
   pendingPayments: number;
   newLeads: number;
   recentPayments: { member_name: string; amount: number; date: string }[];
