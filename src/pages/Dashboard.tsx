@@ -16,7 +16,7 @@ export default function Dashboard() {
 
   const s = stats ?? {
     monthlyRevenue: 0, totalExpenses: 0, profit: 0,
-    activeMembers: 0, expiringMemberships: 0, pendingPayments: 0, newLeads: 0,
+    activeMembers: 0, expiringMemberships: 0, expiredMemberships: 0, pendingPayments: 0, newLeads: 0,
     recentPayments: [],
   };
 
@@ -52,9 +52,16 @@ export default function Dashboard() {
     {
       title: 'Expiring Soon',
       value: s.expiringMemberships.toString(),
-      change: 'Next 7 days',
-      changeType: 'negative' as const,
+      change: 'Within 3 days',
+      changeType: s.expiringMemberships > 0 ? 'negative' as const : 'positive' as const,
       icon: Clock,
+    },
+    {
+      title: 'Expired',
+      value: (s.expiredMemberships ?? 0).toString(),
+      change: 'Need renewal',
+      changeType: (s.expiredMemberships ?? 0) > 0 ? 'negative' as const : 'positive' as const,
+      icon: AlertCircle,
     },
     {
       title: 'Pending Payments',
