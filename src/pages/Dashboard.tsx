@@ -1,4 +1,4 @@
-import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target } from 'lucide-react';
+import { DollarSign, Users, Clock, TrendingUp, AlertCircle, Receipt, UserPlus, CalendarDays, Zap, CreditCard, Target, UserCheck, Percent } from 'lucide-react';
 import { StatCard } from '@/components/dashboard/StatCard';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { useDashboardStats } from '@/hooks/useDashboardStats';
@@ -17,7 +17,8 @@ export default function Dashboard() {
 
   const s = stats ?? {
     monthlyRevenue: 0, totalExpenses: 0, profit: 0,
-    activeMembers: 0, expiringMemberships: 0, expiredMemberships: 0, pendingPayments: 0, newLeads: 0,
+    activeMembers: 0, expiringMemberships: 0, expiredMemberships: 0, pendingPayments: 0,
+    newLeads: 0, totalLeads: 0, convertedLeads: 0, conversionRate: 0,
     recentPayments: [],
     todayNewMembers: 0, todayPayments: 0, todayPaymentsAmount: 0, todayLeads: 0, monthNewMembers: 0,
   };
@@ -64,6 +65,13 @@ export default function Dashboard() {
       change: s.newLeads > 0 ? 'Awaiting contact' : 'No new leads',
       changeType: s.newLeads > 0 ? 'positive' as const : 'neutral' as const,
       icon: UserPlus,
+    },
+    {
+      title: 'Converted Leads',
+      value: s.convertedLeads.toString(),
+      change: `${s.conversionRate}% conversion rate`,
+      changeType: s.conversionRate > 0 ? 'positive' as const : 'neutral' as const,
+      icon: UserCheck,
     },
   ];
 
