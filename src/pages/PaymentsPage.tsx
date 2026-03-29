@@ -66,6 +66,7 @@ export default function PaymentsPage() {
 
   const paidPayments = payments?.filter(p => p.status === 'paid') ?? [];
   const pendingPayments = payments?.filter(p => p.status === 'pending') ?? [];
+  const overduePayments = payments?.filter(p => p.status === 'overdue') ?? [];
 
   const PaymentTable = ({ data, showMarkPaid }: { data: typeof payments; showMarkPaid?: boolean }) => (
     data && data.length > 0 ? (
@@ -88,7 +89,7 @@ export default function PaymentsPage() {
               <TableCell>{format(new Date(p.payment_date), 'dd MMM yyyy')}</TableCell>
               <TableCell className="capitalize">{p.method.replace('_', ' ')}</TableCell>
               <TableCell>
-                <Badge variant={p.status === 'paid' ? 'default' : 'secondary'}>
+              <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}>
                   {p.status}
                 </Badge>
               </TableCell>
@@ -179,6 +180,7 @@ export default function PaymentsPage() {
                       <SelectContent>
                         <SelectItem value="paid">Paid</SelectItem>
                         <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -200,6 +202,7 @@ export default function PaymentsPage() {
           <TabsList>
             <TabsTrigger value="all">All ({payments?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="pending">Pending ({pendingPayments.length})</TabsTrigger>
+            <TabsTrigger value="overdue">Overdue ({overduePayments.length})</TabsTrigger>
             <TabsTrigger value="paid">Paid ({paidPayments.length})</TabsTrigger>
           </TabsList>
           <Card className="mt-4">
@@ -212,6 +215,7 @@ export default function PaymentsPage() {
                 <>
                   <TabsContent value="all" className="m-0"><PaymentTable data={payments} showMarkPaid /></TabsContent>
                   <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid /></TabsContent>
+                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid /></TabsContent>
                   <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} /></TabsContent>
                 </>
               )}

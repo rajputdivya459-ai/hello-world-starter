@@ -22,14 +22,15 @@ export default function LeadsPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [goal, setGoal] = useState('');
   const [filter, setFilter] = useState<string>('all');
 
   if (loading) return null;
 
   const handleAdd = () => {
     if (!name.trim() || !phone.trim()) return;
-    addLead.mutate({ name: name.trim(), phone: phone.trim() }, {
-      onSuccess: () => { setOpen(false); setName(''); setPhone(''); },
+    addLead.mutate({ name: name.trim(), phone: phone.trim(), fitness_goal: goal || undefined }, {
+      onSuccess: () => { setOpen(false); setName(''); setPhone(''); setGoal(''); },
     });
   };
 
@@ -51,6 +52,18 @@ export default function LeadsPage() {
               <div className="space-y-4">
                 <div><Label>Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" /></div>
                 <div><Label>Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" /></div>
+                <div>
+                  <Label>Fitness Goal</Label>
+                  <Select value={goal} onValueChange={setGoal}>
+                    <SelectTrigger><SelectValue placeholder="Select goal" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Weight Loss">Weight Loss</SelectItem>
+                      <SelectItem value="Muscle Gain">Muscle Gain</SelectItem>
+                      <SelectItem value="General Fitness">General Fitness</SelectItem>
+                      <SelectItem value="Strength Training">Strength Training</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Button onClick={handleAdd} disabled={addLead.isPending} className="w-full">
                   {addLead.isPending ? 'Adding...' : 'Add Lead'}
                 </Button>
@@ -72,9 +85,10 @@ export default function LeadsPage() {
         ) : (
           <div className="rounded-xl border bg-card overflow-hidden">
             <table className="w-full text-sm">
-              <thead><tr className="border-b bg-muted/50">
+               <thead><tr className="border-b bg-muted/50">
                 <th className="text-left p-3 font-medium">Name</th>
                 <th className="text-left p-3 font-medium">Phone</th>
+                <th className="text-left p-3 font-medium">Goal</th>
                 <th className="text-left p-3 font-medium">Status</th>
                 <th className="text-left p-3 font-medium">Date</th>
                 <th className="text-right p-3 font-medium">Actions</th>
@@ -84,6 +98,7 @@ export default function LeadsPage() {
                   <tr key={lead.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="p-3 font-medium">{lead.name}</td>
                     <td className="p-3 text-muted-foreground">{lead.phone}</td>
+                    <td className="p-3 text-muted-foreground">{(lead as any).fitness_goal ?? '—'}</td>
                     <td className="p-3">
                       <Select value={lead.status} onValueChange={(v) => updateLeadStatus.mutate({ id: lead.id, status: v as LeadStatus })}>
                         <SelectTrigger className="w-[130px] h-8">
@@ -105,7 +120,7 @@ export default function LeadsPage() {
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={5} className="p-16 text-center">
+                  <tr><td colSpan={6} className="p-16 text-center">
                     <div className="flex flex-col items-center">
                       <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                         <UserPlus className="h-8 w-8 text-primary" />
