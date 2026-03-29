@@ -66,6 +66,7 @@ export default function PaymentsPage() {
 
   const paidPayments = payments?.filter(p => p.status === 'paid') ?? [];
   const pendingPayments = payments?.filter(p => p.status === 'pending') ?? [];
+  const overduePayments = payments?.filter(p => p.status === 'overdue') ?? [];
 
   const PaymentTable = ({ data, showMarkPaid }: { data: typeof payments; showMarkPaid?: boolean }) => (
     data && data.length > 0 ? (
