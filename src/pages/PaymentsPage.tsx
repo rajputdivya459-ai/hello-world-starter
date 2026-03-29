@@ -180,6 +180,7 @@ export default function PaymentsPage() {
                       <SelectContent>
                         <SelectItem value="paid">Paid</SelectItem>
                         <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
