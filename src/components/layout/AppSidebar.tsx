@@ -1,5 +1,5 @@
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
 import {
@@ -16,6 +16,7 @@ const navItems = [
   { title: 'Leads', url: '/app/leads', icon: UserPlus },
   { title: 'Expenses', url: '/app/expenses', icon: Receipt },
   { title: 'Website', url: '/app/website', icon: Globe },
+  { title: 'Contact', url: '/app/contact', icon: MessageCircle },
   { title: 'Settings', url: '/app/settings', icon: Settings },
 ];
 

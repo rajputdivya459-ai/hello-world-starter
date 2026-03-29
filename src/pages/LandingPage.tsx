@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { VideoEmbed } from '@/components/VideoEmbed';
+import { FloatingContactButtons } from '@/components/FloatingContactButtons';
 import { useToast } from '@/hooks/use-toast';
 import { motion, useInView } from 'framer-motion';
 import {
@@ -67,7 +68,10 @@ export default function LandingPage() {
     },
   });
 
-  const ownerId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+  // Derive gymId for contact settings
+  const gymId = data?.plans?.[0]?.user_id || data?.sections?.[0]?.user_id;
+
+  const ownerId = gymId;
   const { data: gymBranding } = usePublicGymSettings(ownerId);
   const brandName = gymBranding?.gym_name || 'GymOS';
   const brandLogo = gymBranding?.logo_url;
@@ -511,6 +515,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Floating WhatsApp & Instagram buttons */}
+      <FloatingContactButtons gymId={gymId} />
     </div>
   );
 }

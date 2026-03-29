@@ -15,8 +15,10 @@ import LeadsPage from "./pages/LeadsPage";
 import WebsiteBuilderPage from "./pages/WebsiteBuilderPage";
 import PlaceholderPage from "./pages/PlaceholderPage";
 import BrandingSettingsPage from "./pages/BrandingSettingsPage";
+import ContactSettingsPage from "./pages/ContactSettingsPage";
 import NotFound from "./pages/NotFound";
 import SeedDataPage from "./pages/SeedDataPage";
+import MemberProfilePage from "./pages/MemberProfilePage";
 import { BrandingProvider } from "./components/BrandingProvider";
 
 const queryClient = new QueryClient();
@@ -38,11 +40,13 @@ const App = () => (
               <Route element={<BrandingProvider><PlaceholderPage /></BrandingProvider>} />
               <Route path="dashboard" element={<BrandingProvider><Dashboard /></BrandingProvider>} />
               <Route path="members" element={<BrandingProvider><MembersPage /></BrandingProvider>} />
+              <Route path="members/:memberId" element={<BrandingProvider><MemberProfilePage /></BrandingProvider>} />
               <Route path="plans" element={<BrandingProvider><PlansPage /></BrandingProvider>} />
               <Route path="payments" element={<BrandingProvider><PaymentsPage /></BrandingProvider>} />
               <Route path="leads" element={<BrandingProvider><LeadsPage /></BrandingProvider>} />
               <Route path="expenses" element={<BrandingProvider><ExpensesPage /></BrandingProvider>} />
               <Route path="website" element={<BrandingProvider><WebsiteBuilderPage /></BrandingProvider>} />
+              <Route path="contact" element={<BrandingProvider><ContactSettingsPage /></BrandingProvider>} />
               <Route path="settings" element={<BrandingProvider><BrandingSettingsPage /></BrandingProvider>} />
             </Route>
 

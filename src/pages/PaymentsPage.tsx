@@ -107,9 +107,22 @@ export default function PaymentsPage() {
         </TableBody>
       </Table>
     ) : (
-      <div className="flex flex-col items-center justify-center p-12 text-center">
-        <CreditCard className="h-12 w-12 text-muted-foreground mb-4" />
-        <p className="text-muted-foreground">No payments found.</p>
+      <div className="flex flex-col items-center justify-center p-16 text-center">
+        <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+          <CreditCard className="h-8 w-8 text-primary" />
+        </div>
+        <h3 className="font-display font-semibold text-lg mb-1">No payments found</h3>
+        <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+          Record your first payment to start tracking revenue.
+        </p>
+        <Button onClick={() => setDialogOpen(true)} disabled={!members || members.length === 0}>
+          <Plus className="h-4 w-4 mr-2" /> Record Your First Payment
+        </Button>
+        {(!members || members.length === 0) && (
+          <p className="text-xs text-muted-foreground mt-3">
+            First, <a href="/app/members" className="text-primary hover:underline">add a member</a> to get started.
+          </p>
+        )}
       </div>
     )
   );

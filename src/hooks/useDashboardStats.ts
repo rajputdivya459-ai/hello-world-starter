@@ -13,6 +13,11 @@ export interface DashboardStats {
   pendingPayments: number;
   newLeads: number;
   recentPayments: { member_name: string; amount: number; date: string }[];
+  todayNewMembers: number;
+  todayPayments: number;
+  todayPaymentsAmount: number;
+  todayLeads: number;
+  monthNewMembers: number;
 }
 
 export function useDashboardStats() {
@@ -21,6 +26,7 @@ export function useDashboardStats() {
   const monthStart = format(startOfMonth(now), 'yyyy-MM-dd');
   const monthEnd = format(endOfMonth(now), 'yyyy-MM-dd');
   const threeDaysFromNow = format(addDays(now, 3), 'yyyy-MM-dd');
+  const sevenDaysFromNow = format(addDays(now, 7), 'yyyy-MM-dd');
   const today = format(now, 'yyyy-MM-dd');
 
   return useQuery({
@@ -29,7 +35,7 @@ export function useDashboardStats() {
       const [paymentsRes, expensesRes, membersRes, pendingRes, recentRes, leadsRes] = await Promise.all([
         supabase
           .from('payments' as any)
-          .select('amount')
+          .select('amount, payment_date')
           .eq('status', 'paid')
           .gte('payment_date', monthStart)
           .lte('payment_date', monthEnd),
@@ -40,7 +46,7 @@ export function useDashboardStats() {
           .lte('expense_date', monthEnd),
         supabase
           .from('members' as any)
-          .select('expiry_date'),
+          .select('expiry_date, start_date, created_at'),
         supabase
           .from('payments' as any)
           .select('id')
@@ -53,7 +59,7 @@ export function useDashboardStats() {
           .limit(5),
         supabase
           .from('leads' as any)
-          .select('id')
+          .select('id, created_at')
           .eq('status', 'new'),
       ]);
 
@@ -68,8 +74,18 @@ export function useDashboardStats() {
       const totalExpenses = (expensesRes.data || []).reduce((sum: number, e: any) => sum + Number(e.amount), 0);
       const allMembers = membersRes.data || [];
       const activeMembers = allMembers.filter((m: any) => m.expiry_date >= today).length;
-      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= threeDaysFromNow).length;
+      const expiringMemberships = allMembers.filter((m: any) => m.expiry_date >= today && m.expiry_date <= sevenDaysFromNow).length;
       const expiredMemberships = allMembers.filter((m: any) => m.expiry_date < today).length;
+
+      // Today stats
+      const todayNewMembers = allMembers.filter((m: any) => m.created_at?.startsWith(today)).length;
+      const todayPaymentsData = (paymentsRes.data || []).filter((p: any) => p.payment_date === today);
+      const todayPayments = todayPaymentsData.length;
+      const todayPaymentsAmount = todayPaymentsData.reduce((sum: number, p: any) => sum + Number(p.amount), 0);
+      const todayLeads = (leadsRes.data || []).filter((l: any) => l.created_at?.startsWith(today)).length;
+
+      // Month stats
+      const monthNewMembers = allMembers.filter((m: any) => m.created_at >= monthStart && m.created_at <= monthEnd).length;
 
       return {
         monthlyRevenue,
@@ -85,6 +101,11 @@ export function useDashboardStats() {
           amount: Number(p.amount),
           date: p.payment_date,
         })),
+        todayNewMembers,
+        todayPayments,
+        todayPaymentsAmount,
+        todayLeads,
+        monthNewMembers,
       } as DashboardStats;
     },
     enabled: !!user,

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMembers, useCreateMember, useUpdateMember, useDeleteMember, Member } from '@/hooks/useMembers';
 import { usePlans } from '@/hooks/usePlans';
@@ -11,9 +12,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Users, Zap, MessageCircle } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { RenewDialog } from '@/components/RenewDialog';
 
 function getExpiryInfo(expiryDate: string) {
   const today = new Date();
@@ -162,6 +164,7 @@ function QuickAddForm({ plans, onSubmit, onCancel }: {
 
 export default function MembersPage() {
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
   const { data: members, isLoading } = useMembers();
   const { data: plans } = usePlans();
   const createMember = useCreateMember();
@@ -171,6 +174,7 @@ export default function MembersPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [editingMember, setEditingMember] = useState<Member | undefined>();
+  const [renewMember, setRenewMember] = useState<Member | undefined>();
 
   if (loading) return null;
 
@@ -318,9 +322,11 @@ export default function MembersPage() {
                     <TableRow
                       key={member.id}
                       className={cn(
+                        'cursor-pointer',
                         expiry.variant === 'expired' && 'bg-destructive/5',
                         expiry.variant === 'expiring' && 'bg-yellow-500/5'
                       )}
+                      onClick={() => navigate(`/app/members/${member.id}`)}
                     >
                       <TableCell className="font-medium">{member.name}</TableCell>
                       <TableCell>{member.phone}</TableCell>
@@ -345,7 +351,15 @@ export default function MembersPage() {
                         </span>
                       </TableCell>
                       <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-1">
+                        <div className="flex items-center justify-end gap-1" onClick={e => e.stopPropagation()}>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            title="Renew"
+                            onClick={() => setRenewMember(member)}
+                          >
+                            <RefreshCw className="h-4 w-4 text-primary" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -379,13 +393,35 @@ export default function MembersPage() {
               </TableBody>
             </Table>
           ) : (
-            <div className="flex flex-col items-center justify-center p-12 text-center">
-              <Users className="h-12 w-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No members yet. Add your first member!</p>
+            <div className="flex flex-col items-center justify-center p-16 text-center">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                <Users className="h-8 w-8 text-primary" />
+              </div>
+              <h3 className="font-display font-semibold text-lg mb-1">No members yet</h3>
+              <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+                Add your first member to start managing your gym. You can quick-add or use the full form.
+              </p>
+              <Button onClick={() => plans && plans.length > 0 ? setQuickAddOpen(true) : undefined} disabled={!plans || plans.length === 0}>
+                <Plus className="h-4 w-4 mr-2" /> Add Your First Member
+              </Button>
+              {(!plans || plans.length === 0) && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  First, <a href="/app/plans" className="text-primary hover:underline">create a plan</a> to get started.
+                </p>
+              )}
             </div>
           )}
         </CardContent>
       </Card>
+      {/* Renew Dialog */}
+      {plans && renewMember && (
+        <RenewDialog
+          open={!!renewMember}
+          onOpenChange={(open) => { if (!open) setRenewMember(undefined); }}
+          member={renewMember}
+          plans={plans}
+        />
+      )}
     </div>
   );
 }
