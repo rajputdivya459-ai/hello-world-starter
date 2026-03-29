@@ -72,9 +72,10 @@ export default function LeadsPage() {
         ) : (
           <div className="rounded-xl border bg-card overflow-hidden">
             <table className="w-full text-sm">
-              <thead><tr className="border-b bg-muted/50">
+               <thead><tr className="border-b bg-muted/50">
                 <th className="text-left p-3 font-medium">Name</th>
                 <th className="text-left p-3 font-medium">Phone</th>
+                <th className="text-left p-3 font-medium">Goal</th>
                 <th className="text-left p-3 font-medium">Status</th>
                 <th className="text-left p-3 font-medium">Date</th>
                 <th className="text-right p-3 font-medium">Actions</th>
