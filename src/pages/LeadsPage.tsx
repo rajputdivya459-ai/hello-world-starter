@@ -29,8 +29,8 @@ export default function LeadsPage() {
 
   const handleAdd = () => {
     if (!name.trim() || !phone.trim()) return;
-    addLead.mutate({ name: name.trim(), phone: phone.trim() }, {
-      onSuccess: () => { setOpen(false); setName(''); setPhone(''); },
+    addLead.mutate({ name: name.trim(), phone: phone.trim(), fitness_goal: goal || undefined }, {
+      onSuccess: () => { setOpen(false); setName(''); setPhone(''); setGoal(''); },
     });
   };
 
