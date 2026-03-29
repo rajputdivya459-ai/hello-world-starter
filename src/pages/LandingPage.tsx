@@ -13,7 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, useInView } from 'framer-motion';
 import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
-  Instagram, MapPin, Mail, Clock, Menu, X,
+  Instagram, MapPin, Mail, Clock, Menu, X, CalendarCheck,
 } from 'lucide-react';
 
 function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {

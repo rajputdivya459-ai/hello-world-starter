@@ -52,6 +52,13 @@ export default function Dashboard() {
       icon: AlertCircle,
     },
     {
+      title: 'Overdue Members',
+      value: s.expiredMemberships.toString(),
+      change: s.expiredMemberships > 0 ? 'Renewal overdue' : 'None overdue',
+      changeType: s.expiredMemberships > 0 ? 'negative' as const : 'positive' as const,
+      icon: Clock,
+    },
+    {
       title: 'New Leads',
       value: s.newLeads.toString(),
       change: s.newLeads > 0 ? 'Awaiting contact' : 'No new leads',

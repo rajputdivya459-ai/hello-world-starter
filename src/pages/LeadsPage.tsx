@@ -52,6 +52,18 @@ export default function LeadsPage() {
               <div className="space-y-4">
                 <div><Label>Name</Label><Input value={name} onChange={e => setName(e.target.value)} placeholder="John Doe" /></div>
                 <div><Label>Phone</Label><Input value={phone} onChange={e => setPhone(e.target.value)} placeholder="+91 98765 43210" /></div>
+                <div>
+                  <Label>Fitness Goal</Label>
+                  <Select value={goal} onValueChange={setGoal}>
+                    <SelectTrigger><SelectValue placeholder="Select goal" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Weight Loss">Weight Loss</SelectItem>
+                      <SelectItem value="Muscle Gain">Muscle Gain</SelectItem>
+                      <SelectItem value="General Fitness">General Fitness</SelectItem>
+                      <SelectItem value="Strength Training">Strength Training</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Button onClick={handleAdd} disabled={addLead.isPending} className="w-full">
                   {addLead.isPending ? 'Adding...' : 'Add Lead'}
                 </Button>

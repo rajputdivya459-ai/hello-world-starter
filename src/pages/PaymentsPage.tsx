@@ -215,6 +215,7 @@ export default function PaymentsPage() {
                 <>
                   <TabsContent value="all" className="m-0"><PaymentTable data={payments} showMarkPaid /></TabsContent>
                   <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid /></TabsContent>
+                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid /></TabsContent>
                   <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} /></TabsContent>
                 </>
               )}

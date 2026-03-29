@@ -12,7 +12,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw } from 'lucide-react';
+import { Plus, Pencil, Trash2, Users, Zap, MessageCircle, RefreshCw, Bell } from 'lucide-react';
 import { addDays, format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
