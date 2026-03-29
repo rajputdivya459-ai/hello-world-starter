@@ -107,7 +107,7 @@ export default function LeadsPage() {
                   </tr>
                 ))}
                 {filtered.length === 0 && (
-                  <tr><td colSpan={5} className="p-16 text-center">
+                  <tr><td colSpan={6} className="p-16 text-center">
                     <div className="flex flex-col items-center">
                       <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                         <UserPlus className="h-8 w-8 text-primary" />
