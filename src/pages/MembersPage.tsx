@@ -375,6 +375,16 @@ export default function MembersPage() {
                               <MessageCircle className="h-4 w-4" />
                             </a>
                           </Button>
+                          {(expiry.variant === 'expiring' || expiry.variant === 'expired') && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              title="Send Reminder (coming soon)"
+                              onClick={() => toast({ title: '📩 Reminder', description: `Reminder feature for ${member.name} coming soon!` })}
+                            >
+                              <Bell className="h-4 w-4 text-yellow-600" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
