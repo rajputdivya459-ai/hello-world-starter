@@ -22,11 +22,6 @@ export interface DashboardStats {
   todayLeads: number;
   monthNewMembers: number;
 }
-  todayPayments: number;
-  todayPaymentsAmount: number;
-  todayLeads: number;
-  monthNewMembers: number;
-}
 
 export function useDashboardStats() {
   const { user } = useAuth();
