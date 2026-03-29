@@ -202,6 +202,7 @@ export default function PaymentsPage() {
           <TabsList>
             <TabsTrigger value="all">All ({payments?.length ?? 0})</TabsTrigger>
             <TabsTrigger value="pending">Pending ({pendingPayments.length})</TabsTrigger>
+            <TabsTrigger value="overdue">Overdue ({overduePayments.length})</TabsTrigger>
             <TabsTrigger value="paid">Paid ({paidPayments.length})</TabsTrigger>
           </TabsList>
           <Card className="mt-4">
