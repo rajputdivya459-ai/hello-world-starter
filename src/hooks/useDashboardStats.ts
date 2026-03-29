@@ -89,6 +89,12 @@ export function useDashboardStats() {
       // Month stats
       const monthNewMembers = allMembers.filter((m: any) => m.created_at >= monthStart && m.created_at <= monthEnd).length;
 
+      const allLeads = leadsRes.data || [];
+      const totalLeads = allLeads.length;
+      const newLeadsCount = allLeads.filter((l: any) => l.status === 'new').length;
+      const convertedLeads = allLeads.filter((l: any) => l.status === 'joined').length;
+      const conversionRate = totalLeads > 0 ? Math.round((convertedLeads / totalLeads) * 100) : 0;
+
       return {
         monthlyRevenue,
         totalExpenses,
@@ -97,7 +103,10 @@ export function useDashboardStats() {
         expiringMemberships,
         expiredMemberships,
         pendingPayments: (pendingRes.data || []).length,
-        newLeads: (leadsRes.data || []).length,
+        newLeads: newLeadsCount,
+        totalLeads,
+        convertedLeads,
+        conversionRate,
         recentPayments: (recentRes.data || []).map((p: any) => ({
           member_name: p.members?.name ?? 'Unknown',
           amount: Number(p.amount),
