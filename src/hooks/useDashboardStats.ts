@@ -12,8 +12,16 @@ export interface DashboardStats {
   expiredMemberships: number;
   pendingPayments: number;
   newLeads: number;
+  totalLeads: number;
+  convertedLeads: number;
+  conversionRate: number;
   recentPayments: { member_name: string; amount: number; date: string }[];
   todayNewMembers: number;
+  todayPayments: number;
+  todayPaymentsAmount: number;
+  todayLeads: number;
+  monthNewMembers: number;
+}
   todayPayments: number;
   todayPaymentsAmount: number;
   todayLeads: number;
