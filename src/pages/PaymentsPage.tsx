@@ -89,7 +89,7 @@ export default function PaymentsPage() {
               <TableCell>{format(new Date(p.payment_date), 'dd MMM yyyy')}</TableCell>
               <TableCell className="capitalize">{p.method.replace('_', ' ')}</TableCell>
               <TableCell>
-                <Badge variant={p.status === 'paid' ? 'default' : 'secondary'}>
+              <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}>
                   {p.status}
                 </Badge>
               </TableCell>
