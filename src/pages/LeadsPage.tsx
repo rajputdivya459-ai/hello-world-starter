@@ -336,17 +336,16 @@ function ConvertDialog({
 
   const handleConvert = () => {
     if (!planId || !expiryDate) return;
-    onConvert.mutate(
-      {
-        leadId: lead.id,
-        planId,
-        startDate,
-        expiryDate,
-        name: lead.name,
-        phone: lead.phone,
-      },
-      { onSuccess: () => { onClose(); setPlanId(''); } } as any,
-    );
+    onConvert.mutate({
+      leadId: lead.id,
+      planId,
+      startDate,
+      expiryDate,
+      name: lead.name,
+      phone: lead.phone,
+    });
+    onClose();
+    setPlanId('');
   };
 
   return (
