@@ -67,8 +67,7 @@ export function useDashboardStats() {
           .limit(5),
         supabase
           .from('leads' as any)
-          .select('id, created_at')
-          .eq('status', 'new'),
+          .select('id, created_at, status'),
       ]);
 
       if (paymentsRes.error) throw paymentsRes.error;
