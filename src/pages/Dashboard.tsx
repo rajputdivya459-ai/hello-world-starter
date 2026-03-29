@@ -66,6 +66,13 @@ export default function Dashboard() {
       changeType: s.newLeads > 0 ? 'positive' as const : 'neutral' as const,
       icon: UserPlus,
     },
+    {
+      title: 'Converted Leads',
+      value: s.convertedLeads.toString(),
+      change: `${s.conversionRate}% conversion rate`,
+      changeType: s.conversionRate > 0 ? 'positive' as const : 'neutral' as const,
+      icon: UserCheck,
+    },
   ];
 
   const todayItems = [
