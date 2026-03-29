@@ -85,6 +85,7 @@ export default function LeadsPage() {
                   <tr key={lead.id} className="border-b last:border-0 hover:bg-muted/30">
                     <td className="p-3 font-medium">{lead.name}</td>
                     <td className="p-3 text-muted-foreground">{lead.phone}</td>
+                    <td className="p-3 text-muted-foreground">{(lead as any).fitness_goal ?? '—'}</td>
                     <td className="p-3">
                       <Select value={lead.status} onValueChange={(v) => updateLeadStatus.mutate({ id: lead.id, status: v as LeadStatus })}>
                         <SelectTrigger className="w-[130px] h-8">
