@@ -22,6 +22,7 @@ export default function LeadsPage() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
+  const [goal, setGoal] = useState('');
   const [filter, setFilter] = useState<string>('all');
 
   if (loading) return null;
