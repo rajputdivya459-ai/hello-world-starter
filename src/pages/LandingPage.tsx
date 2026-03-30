@@ -621,7 +621,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[600px] bg-primary/8 rounded-full blur-[150px]" />
         </div>
-        <AnimatedSection>
+        <AnimatedSection variant="scale">
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <div className="rounded-3xl bg-gradient-to-br from-primary/15 via-[hsl(220,25%,7%)] to-[hsl(220,25%,5%)] border border-primary/20 p-14 sm:p-20">
               <h2 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-display leading-tight">
