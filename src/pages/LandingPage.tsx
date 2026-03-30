@@ -629,12 +629,16 @@ export default function LandingPage() {
               </h2>
               <p className="mt-6 text-lg text-[hsl(220,10%,50%)] max-w-xl mx-auto">Join hundreds of members who've transformed their lives.</p>
               <div className="mt-10 flex flex-wrap justify-center gap-4">
-                <Button size="lg" className="h-14 px-10 text-base font-bold rounded-xl shadow-lg shadow-primary/25 hover:scale-[1.02] transition-all" onClick={() => scrollTo('lead-form')}>
-                  Join Now <ArrowRight className="ml-2 h-5 w-5" />
-                </Button>
-                <Button size="lg" variant="outline" className="h-14 px-10 text-base font-semibold rounded-xl border-[hsl(220,20%,18%)] bg-transparent text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,12%)] hover:scale-[1.02] transition-all" onClick={() => scrollTo('lead-form')}>
-                  <Play className="mr-2 h-5 w-5" /> Book Free Trial
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
+                  <Button size="lg" className="h-14 px-10 text-base font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-shadow duration-300" onClick={() => scrollTo('lead-form')}>
+                    Join Now <ArrowRight className="ml-2 h-5 w-5" />
+                  </Button>
+                </motion.div>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
+                  <Button size="lg" variant="outline" className="h-14 px-10 text-base font-semibold rounded-xl border-[hsl(220,20%,18%)] bg-transparent text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,12%)] transition-all duration-300" onClick={() => scrollTo('lead-form')}>
+                    <Play className="mr-2 h-5 w-5" /> Book Free Trial
+                  </Button>
+                </motion.div>
               </div>
             </div>
           </div>
