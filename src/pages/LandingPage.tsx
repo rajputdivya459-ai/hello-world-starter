@@ -294,7 +294,7 @@ export default function LandingPage() {
             <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
           </div>
           <div className="max-w-7xl mx-auto relative z-10">
-            <AnimatedSection className="text-center mb-16">
+            <AnimatedSection className="text-center mb-16" variant="blur">
               <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">What We Offer</p>
               <h2 className="text-4xl sm:text-5xl font-bold font-display">{servicesContent.title || 'Our Services'}</h2>
               <p className="mt-5 text-[hsl(220,10%,50%)] max-w-xl mx-auto text-lg">{servicesContent.subtitle || 'Explore our range of fitness programs.'}</p>
