@@ -12,8 +12,9 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, CheckCircle, CreditCard } from 'lucide-react';
+import { Plus, Trash2, CheckCircle, CreditCard, AlertTriangle } from 'lucide-react';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
 
 const methods = [
   { value: 'cash', label: 'Cash' },
@@ -89,13 +90,18 @@ export default function PaymentsPage() {
               <TableCell>{format(new Date(p.payment_date), 'dd MMM yyyy')}</TableCell>
               <TableCell className="capitalize">{p.method.replace('_', ' ')}</TableCell>
               <TableCell>
-              <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}>
+                <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}
+                  className={cn(
+                    p.status === 'paid' && 'bg-emerald-500/10 text-emerald-600 border border-emerald-300',
+                    p.status === 'overdue' && '',
+                    p.status === 'pending' && 'border-orange-400 text-orange-500 bg-orange-500/10'
+                  )}>
                   {p.status}
                 </Badge>
               </TableCell>
               <TableCell className="text-right">
-                {showMarkPaid && p.status === 'pending' && (
-                  <Button variant="ghost" size="icon" onClick={() => updateStatus.mutateAsync({ id: p.id, status: 'paid' })}>
+                {showMarkPaid && (p.status === 'pending' || p.status === 'overdue') && (
+                  <Button variant="ghost" size="icon" title="Mark as Paid" onClick={() => updateStatus.mutateAsync({ id: p.id, status: 'paid' })}>
                     <CheckCircle className="h-4 w-4 text-primary" />
                   </Button>
                 )}
@@ -127,6 +133,8 @@ export default function PaymentsPage() {
       </div>
     )
   );
+
+  const totalPendingAmount = [...(pendingPayments), ...(overduePayments)].reduce((sum, p) => sum + Number(p.amount), 0);
 
   return (
     <div className="space-y-6">
@@ -197,6 +205,45 @@ export default function PaymentsPage() {
             </DialogContent>
           </Dialog>
         </div>
+
+        {/* Summary Cards */}
+        {(pendingPayments.length > 0 || overduePayments.length > 0) && (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{pendingPayments.length}</p>
+                  <p className="text-xs text-muted-foreground">Pending</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">{overduePayments.length}</p>
+                  <p className="text-xs text-muted-foreground">Overdue</p>
+                </div>
+              </CardContent>
+            </Card>
+            <Card>
+              <CardContent className="p-4 flex items-center gap-3">
+                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <CreditCard className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold">₹{totalPendingAmount.toLocaleString()}</p>
+                  <p className="text-xs text-muted-foreground">Total Due</p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
 
         <Tabs defaultValue="all">
           <TabsList>
