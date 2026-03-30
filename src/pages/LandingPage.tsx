@@ -250,12 +250,16 @@ export default function LandingPage() {
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.5 }}
             className="mt-12 flex flex-wrap justify-center gap-4">
-            <Button size="lg" className="h-14 px-10 text-base font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:scale-[1.02] transition-all duration-200" onClick={() => scrollTo('lead-form')}>
-              {heroContent.cta_text || 'Start Free Trial'} <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-            <Button size="lg" variant="outline" className="h-14 px-10 text-base font-semibold rounded-xl border-[hsl(220,20%,18%)] bg-[hsl(220,25%,8%)]/50 text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,12%)] backdrop-blur-sm hover:scale-[1.02] transition-all duration-200" onClick={() => scrollTo('lead-form')}>
-              <Calendar className="mr-2 h-5 w-5" /> Book a Visit
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
+              <Button size="lg" className="h-14 px-10 text-base font-bold rounded-xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/40 transition-shadow duration-300" onClick={() => scrollTo('lead-form')}>
+                {heroContent.cta_text || 'Start Free Trial'} <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }} transition={{ type: 'spring', stiffness: 400, damping: 17 }}>
+              <Button size="lg" variant="outline" className="h-14 px-10 text-base font-semibold rounded-xl border-[hsl(220,20%,18%)] bg-[hsl(220,25%,8%)]/50 text-[hsl(220,10%,92%)] hover:bg-[hsl(220,20%,12%)] backdrop-blur-sm transition-all duration-300" onClick={() => scrollTo('lead-form')}>
+                <Calendar className="mr-2 h-5 w-5" /> Book a Visit
+              </Button>
+            </motion.div>
           </motion.div>
         </div>
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[hsl(220,25%,4%)] to-transparent" />
