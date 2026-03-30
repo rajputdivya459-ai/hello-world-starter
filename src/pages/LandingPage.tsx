@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { FloatingContactButtons } from '@/components/FloatingContactButtons';
 import { useToast } from '@/hooks/use-toast';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform } from 'framer-motion';
 import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
   MapPin, Mail, Clock, Menu, X,
@@ -17,14 +17,37 @@ import {
 import type { HeroContent, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import { Lightbox } from '@/components/Lightbox';
+import { PageLoader } from '@/components/PageLoader';
 
-function AnimatedSection({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+type AnimationVariant = 'fade-up' | 'fade-left' | 'fade-right' | 'scale' | 'blur';
+
+const variants: Record<AnimationVariant, { initial: any; animate: any }> = {
+  'fade-up': { initial: { opacity: 0, y: 40 }, animate: { opacity: 1, y: 0 } },
+  'fade-left': { initial: { opacity: 0, x: -40 }, animate: { opacity: 1, x: 0 } },
+  'fade-right': { initial: { opacity: 0, x: 40 }, animate: { opacity: 1, x: 0 } },
+  'scale': { initial: { opacity: 0, scale: 0.9 }, animate: { opacity: 1, scale: 1 } },
+  'blur': { initial: { opacity: 0, filter: 'blur(10px)' }, animate: { opacity: 1, filter: 'blur(0px)' } },
+};
+
+function AnimatedSection({ children, className = '', delay = 0, variant = 'fade-up' }: { children: React.ReactNode; className?: string; delay?: number; variant?: AnimationVariant }) {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-80px' });
+  const isInView = useInView(ref, { once: true, margin: '-60px' });
+  const v = variants[variant];
   return (
-    <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={isInView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
+    <motion.div ref={ref} initial={v.initial} animate={isInView ? v.animate : {}} transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }} className={className}>
       {children}
     </motion.div>
+  );
+}
+
+function ParallaxSection({ children, className = '', speed = 0.15 }: { children: React.ReactNode; className?: string; speed?: number }) {
+  const ref = useRef(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] });
+  const y = useTransform(scrollYProgress, [0, 1], [speed * 100, -speed * 100]);
+  return (
+    <div ref={ref} className={className}>
+      <motion.div style={{ y }}>{children}</motion.div>
+    </div>
   );
 }
 
