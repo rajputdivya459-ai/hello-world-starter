@@ -205,75 +205,130 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
   const { error: sectionsErr } = await supabase.from('website_sections').insert(sections);
   if (sectionsErr) throw new Error(`Website Sections: ${sectionsErr.message}`);
 
-  // 10. Website Content (all section keys)
+  // 10. Website Content (all section keys — fully populated)
   const websiteContent = [
     {
       section_key: 'hero', is_enabled: true,
-      content: { title: 'Transform Your Body. Build Your Discipline.', subtitle: 'Join Elite Fitness Club — Where Champions Are Made', background_image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920', video_url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
+      content: {
+        title: 'Transform Your Body. Build Your Discipline.',
+        subtitle: 'Join Elite Fitness Club — Where Champions Are Made',
+        image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1920&q=80',
+        video_url: 'https://www.youtube.com/watch?v=qSOVBiEotaw',
+        mobile_image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80',
+        mobile_video_url: '',
+        cta_text: 'Start Free Trial',
+      },
     },
     {
       section_key: 'pricing', is_enabled: true,
-      content: { title: 'Membership Plans', subtitle: 'Choose the plan that fits your goals' },
+      content: {
+        title: 'Membership Plans',
+        subtitle: 'Flexible plans designed for every fitness level and budget.',
+        cta_note: '⚡ Limited slots — Join now & get 10% off!',
+      },
     },
     {
       section_key: 'trainers', is_enabled: true,
-      content: { title: 'Our Expert Trainers', subtitle: 'Certified professionals dedicated to your transformation' },
+      content: {
+        title: 'Meet Our Expert Trainers',
+        subtitle: 'Certified professionals dedicated to your transformation.',
+        items: [
+          { name: 'Rajesh Kumar', specialization: 'Strength & Conditioning', image_url: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400&h=400&fit=crop&crop=face' },
+          { name: 'Anita Sharma', specialization: 'Yoga & Flexibility', image_url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=400&h=400&fit=crop&crop=face' },
+          { name: 'Vikash Rawat', specialization: 'CrossFit & HIIT', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=400&h=400&fit=crop&crop=face' },
+          { name: 'Priyanka Negi', specialization: 'Nutrition & Weight Management', image_url: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop&crop=face' },
+        ],
+      },
     },
     {
       section_key: 'testimonials', is_enabled: true,
-      content: { title: 'What Our Members Say', subtitle: 'Real stories from real transformations' },
+      content: {
+        title: 'Real Results, Real Stories',
+        subtitle: 'Hear from our members who transformed their lives.',
+        items: [
+          { name: 'Aarav Patel', content: 'Lost 15 kgs in 3 months! The trainers here are phenomenal and the environment keeps you motivated every day.' },
+          { name: 'Priya Sharma', content: 'Best gym in the city! Equipment is top-notch and the personal training program completely changed my life.' },
+          { name: 'Vikram Singh', content: 'Gained 8 kgs of lean muscle in one year. The coaches know exactly how to push you.', video_url: 'https://www.youtube.com/watch?v=qSOVBiEotaw' },
+          { name: 'Sneha Reddy', content: 'The yoga classes are incredible. My flexibility and mental peace have improved drastically.' },
+          { name: 'Arjun Nair', content: 'From couch potato to half-marathon runner — this gym made it possible!', video_url: 'https://www.youtube.com/watch?v=qSOVBiEotaw' },
+        ],
+      },
     },
     {
       section_key: 'gallery', is_enabled: true,
-      content: { title: 'Our Facility', subtitle: 'Take a virtual tour of our world-class gym' },
+      content: {
+        title: 'Take a Virtual Tour',
+        items: [
+          { url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=800&q=80', type: 'image', caption: 'Main training floor' },
+          { url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=800&q=80', type: 'image', caption: 'Spacious workout area' },
+          { url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=800&q=80', type: 'image', caption: 'Free weights section' },
+          { url: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80', type: 'image', caption: 'Personal training zone' },
+          { url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=800&q=80', type: 'image', caption: 'Yoga studio' },
+          { url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=800&q=80', type: 'image', caption: 'Cardio machines' },
+          { url: 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=800&q=80', type: 'image', caption: 'Group fitness studio' },
+          { url: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&q=80', type: 'image', caption: 'CrossFit box' },
+          { url: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=800&q=80', type: 'image', caption: 'Transformation wall' },
+          { url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=800&q=80', type: 'image', caption: 'Functional training area' },
+          { url: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=800&q=80', type: 'image', caption: 'Boxing ring' },
+          { url: 'https://www.youtube.com/watch?v=qSOVBiEotaw', type: 'video', caption: 'Gym walkthrough tour' },
+          { url: 'https://www.youtube.com/watch?v=tt7gR_Fzm8E', type: 'video', caption: 'Member transformation stories' },
+        ],
+      },
     },
     {
       section_key: 'services', is_enabled: true,
       content: {
-        title: 'Our Services', subtitle: 'Everything you need under one roof',
+        title: 'Our Services',
+        subtitle: 'Everything you need for a complete fitness lifestyle.',
         items: [
-          { name: 'Personal Training', description: 'One-on-one sessions with expert trainers tailored to your goals.', icon: '💪' },
-          { name: 'Yoga Classes', description: 'Improve flexibility, balance, and mental peace with daily yoga.', icon: '🧘' },
-          { name: 'Zumba', description: 'Fun dance workouts that burn calories and boost your mood.', icon: '💃' },
-          { name: 'Meditation', description: 'Guided meditation sessions for stress relief and focus.', icon: '🧠' },
+          { title: 'Personal Training', description: 'One-on-one sessions with certified trainers tailored to your specific goals and fitness level.', icon: '💪', image_url: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=600&q=80' },
+          { title: 'Yoga & Meditation', description: 'Daily classes to improve flexibility, balance, strength, and mental clarity.', icon: '🧘', image_url: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=600&q=80' },
+          { title: 'Zumba Dance Fitness', description: 'High-energy dance workouts that burn 600+ calories per session while having fun.', icon: '💃', image_url: 'https://images.unsplash.com/photo-1524594152303-9fd13543fe6e?w=600&q=80' },
+          { title: 'CrossFit & HIIT', description: 'Intense functional training programs for maximum results in minimum time.', icon: '🔥', image_url: 'https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=600&q=80' },
+          { title: 'Nutrition Coaching', description: 'Personalized diet plans and supplement guidance from certified nutritionists.', icon: '🥗', image_url: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=600&q=80' },
+          { title: 'Boxing & MMA', description: 'Learn self-defense while getting the best full-body workout of your life.', icon: '🥊', image_url: 'https://images.unsplash.com/photo-1549719386-74dfcbf7dbed?w=600&q=80' },
         ],
       },
     },
     {
       section_key: 'equipment', is_enabled: true,
       content: {
-        title: 'Premium Equipment', subtitle: 'Train with the best gear',
+        title: 'World-Class Equipment',
+        subtitle: 'Train with premium machines trusted by professional athletes.',
         items: [
-          { name: 'Commercial Treadmills', brand: 'Life Fitness' },
-          { name: 'Power Racks', brand: 'Hammer Strength' },
-          { name: 'Cable Crossover', brand: 'Technogym' },
-          { name: 'Spin Bikes', brand: 'Keiser' },
-          { name: 'Rowing Machines', brand: 'Concept2' },
-          { name: 'Functional Trainer', brand: 'Matrix' },
+          { name: 'Commercial Treadmills', description: 'Life Fitness Platinum Club Series with 10" touchscreen and heart rate monitoring.', image_url: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=600&q=80' },
+          { name: 'Power Racks & Squat Stations', description: 'Hammer Strength HD Elite racks with safety catches and band pegs.', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80' },
+          { name: 'Cable Crossover Machines', description: 'Technogym Selection Line dual adjustable pulleys for isolation exercises.', image_url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80' },
+          { name: 'Spin Bikes', description: 'Keiser M3i indoor cycles with magnetic resistance and Bluetooth connectivity.', image_url: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=600&q=80' },
+          { name: 'Rowing Machines', description: 'Concept2 Model D with PM5 performance monitor — the gold standard.', image_url: 'https://images.unsplash.com/photo-1593079831268-3381b0db4a77?w=600&q=80' },
+          { name: 'Functional Trainers', description: 'Matrix Fitness G7 with dual 90.5 kg weight stacks for versatile training.', image_url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80' },
         ],
       },
     },
     {
       section_key: 'reviews', is_enabled: true,
       content: {
-        title: 'Google Reviews', subtitle: 'See what people say about us',
+        title: 'Google Reviews',
+        subtitle: 'Rated 4.8★ on Google with 500+ reviews.',
         items: [
-          { author: 'Amit S.', rating: 5, text: 'Best gym experience I have ever had. Clean, well-equipped, and great trainers!' },
-          { author: 'Priya M.', rating: 5, text: 'Love the yoga classes here. Very peaceful and professional.' },
-          { author: 'Rahul K.', rating: 4, text: 'Great equipment and friendly staff. Parking could be better.' },
-          { author: 'Sneha D.', rating: 5, text: 'Transformed my body in 6 months. Highly recommend!' },
-          { author: 'Vijay R.', rating: 4, text: 'Good variety of classes. Would love evening Zumba slots.' },
+          { name: 'Amit Sharma', rating: 5, text: 'Best gym experience I have ever had. Spotlessly clean, well-equipped, and trainers who genuinely care about your progress.' },
+          { name: 'Priya Menon', rating: 5, text: 'Love the yoga and meditation classes. Very peaceful, professional, and the studio is beautiful.' },
+          { name: 'Rahul Kapoor', rating: 4, text: 'Great equipment and friendly staff. The CrossFit area is fantastic. Wish they had more parking space.' },
+          { name: 'Sneha Deshmukh', rating: 5, text: 'Completely transformed my body in 6 months. Down 20 kgs and feeling stronger than ever. Highly recommend!' },
+          { name: 'Vijay Raman', rating: 4, text: 'Good variety of group classes. Would love if they added evening Zumba slots on weekends.' },
+          { name: 'Kavita Joshi', rating: 5, text: 'The personal trainers here are on another level. My trainer created a custom plan that actually works.' },
         ],
       },
     },
     {
       section_key: 'branches', is_enabled: true,
       content: {
-        title: 'Our Branches', subtitle: 'Find a location near you',
+        title: 'Our Locations',
+        subtitle: 'Three premium locations across the city.',
         items: [
-          { name: 'Elite Fitness — Koramangala', address: '4th Block, Koramangala, Bangalore — 560034', phone: '9876500001', map_url: '' },
-          { name: 'Elite Fitness — Indiranagar', address: '12th Main, Indiranagar, Bangalore — 560038', phone: '9876500002', map_url: '' },
-          { name: 'Elite Fitness — HSR Layout', address: 'Sector 2, HSR Layout, Bangalore — 560102', phone: '9876500003', map_url: '' },
+          { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001' },
+          { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002' },
+          { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003' },
         ],
       },
     },
