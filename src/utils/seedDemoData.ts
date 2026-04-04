@@ -30,9 +30,12 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
 
   // 1. Plans
   const plans = [
-    { name: 'Basic Plan', price: 999, duration_days: 30, user_id: userId },
-    { name: 'Standard Plan', price: 1999, duration_days: 90, user_id: userId },
-    { name: 'Premium Plan', price: 4999, duration_days: 365, user_id: userId },
+    { name: 'Basic Monthly', price: 999, duration_days: 30, category: 'Monthly', benefits: ['Full gym access', 'Locker facility', 'Basic fitness assessment'], is_highlighted: false, user_id: userId },
+    { name: 'Standard Quarterly', price: 2499, duration_days: 90, category: 'Quarterly', benefits: ['Full gym access', 'Personal trainer (2x/week)', 'Diet consultation', 'Steam & sauna'], is_highlighted: true, user_id: userId },
+    { name: 'Premium Yearly', price: 7999, duration_days: 365, category: 'Yearly', benefits: ['Unlimited gym access', 'Dedicated personal trainer', 'Monthly body analysis', 'Nutrition plan', 'Group classes', 'Guest passes'], is_highlighted: false, user_id: userId },
+    { name: 'Couple Monthly', price: 1799, duration_days: 30, category: 'Couple', benefits: ['2 member access', 'Full gym access', 'Locker facility'], is_highlighted: false, user_id: userId },
+    { name: 'Female Special', price: 1299, duration_days: 30, category: 'Female', benefits: ['Full gym access', 'Women-only hours', 'Zumba & yoga classes', 'Diet plan'], is_highlighted: false, user_id: userId },
+    { name: 'Half-Yearly', price: 4499, duration_days: 180, category: 'Half-Yearly', benefits: ['Full gym access', 'Personal trainer (3x/week)', 'Diet consultation', 'Steam & sauna', 'Supplement discount'], is_highlighted: false, user_id: userId },
   ];
   const { data: insertedPlans, error: plansErr } = await supabase.from('plans').insert(plans).select();
   if (plansErr) throw new Error(`Plans: ${plansErr.message}`);
