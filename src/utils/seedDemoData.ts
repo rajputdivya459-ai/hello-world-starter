@@ -15,6 +15,8 @@ async function clearUserData(userId: string) {
     'website_content',
     'contact_settings',
     'gym_settings',
+    'reviews',
+    'branches',
   ];
   for (const table of tables) {
     await (supabase.from(table as any) as any).delete().eq('user_id', userId);
