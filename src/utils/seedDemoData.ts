@@ -15,6 +15,8 @@ async function clearUserData(userId: string) {
     'website_content',
     'contact_settings',
     'gym_settings',
+    'reviews',
+    'branches',
   ];
   for (const table of tables) {
     await (supabase.from(table as any) as any).delete().eq('user_id', userId);
@@ -28,15 +30,18 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
 
   // 1. Plans
   const plans = [
-    { name: 'Basic Plan', price: 999, duration_days: 30, user_id: userId },
-    { name: 'Standard Plan', price: 1999, duration_days: 90, user_id: userId },
-    { name: 'Premium Plan', price: 4999, duration_days: 365, user_id: userId },
+    { name: 'Basic Monthly', price: 999, duration_days: 30, category: 'Monthly', benefits: ['Full gym access', 'Locker facility', 'Basic fitness assessment'], is_highlighted: false, user_id: userId },
+    { name: 'Standard Quarterly', price: 2499, duration_days: 90, category: 'Quarterly', benefits: ['Full gym access', 'Personal trainer (2x/week)', 'Diet consultation', 'Steam & sauna'], is_highlighted: true, user_id: userId },
+    { name: 'Premium Yearly', price: 7999, duration_days: 365, category: 'Yearly', benefits: ['Unlimited gym access', 'Dedicated personal trainer', 'Monthly body analysis', 'Nutrition plan', 'Group classes', 'Guest passes'], is_highlighted: false, user_id: userId },
+    { name: 'Couple Monthly', price: 1799, duration_days: 30, category: 'Couple', benefits: ['2 member access', 'Full gym access', 'Locker facility'], is_highlighted: false, user_id: userId },
+    { name: 'Female Special', price: 1299, duration_days: 30, category: 'Female', benefits: ['Full gym access', 'Women-only hours', 'Zumba & yoga classes', 'Diet plan'], is_highlighted: false, user_id: userId },
+    { name: 'Half-Yearly', price: 4499, duration_days: 180, category: 'Half-Yearly', benefits: ['Full gym access', 'Personal trainer (3x/week)', 'Diet consultation', 'Steam & sauna', 'Supplement discount'], is_highlighted: false, user_id: userId },
   ];
   const { data: insertedPlans, error: plansErr } = await supabase.from('plans').insert(plans).select();
   if (plansErr) throw new Error(`Plans: ${plansErr.message}`);
   if (!insertedPlans?.length) throw new Error('Plans insert returned no data');
 
-  const planMap = { basic: insertedPlans[0].id, standard: insertedPlans[1].id, premium: insertedPlans[2].id };
+  const planMap = { basic: insertedPlans[0].id, standard: insertedPlans[1].id, premium: insertedPlans[2].id, couple: insertedPlans[3]?.id, female: insertedPlans[4]?.id, half: insertedPlans[5]?.id };
   const durationMap: Record<string, number> = { basic: 30, standard: 90, premium: 365 };
 
   // 2. Members (25 — mix of active, expiring, expired)
@@ -355,6 +360,29 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
     secondary_color: '215 28% 17%',
   }, { onConflict: 'user_id' });
   if (settingsErr) throw new Error(`Gym Settings: ${settingsErr.message}`);
+
+  // 13. Reviews
+  const reviews = [
+    { name: 'Amit Sharma', rating: 5, text: 'Best gym experience I have ever had. Spotlessly clean, well-equipped, and trainers who genuinely care about your progress.', sort_order: 1 },
+    { name: 'Priya Menon', rating: 5, text: 'Love the yoga and meditation classes. Very peaceful, professional, and the studio is beautiful.', sort_order: 2 },
+    { name: 'Rahul Kapoor', rating: 4, text: 'Great equipment and friendly staff. The CrossFit area is fantastic. Wish they had more parking space.', sort_order: 3 },
+    { name: 'Sneha Deshmukh', rating: 5, text: 'Completely transformed my body in 6 months. Down 20 kgs and feeling stronger than ever!', sort_order: 4 },
+    { name: 'Vijay Raman', rating: 4, text: 'Good variety of group classes. Would love if they added evening Zumba slots on weekends.', sort_order: 5 },
+    { name: 'Kavita Joshi', rating: 5, text: 'The personal trainers here are on another level. My trainer created a custom plan that actually works.', sort_order: 6 },
+  ].map(r => ({ ...r, user_id: userId }));
+
+  const { error: reviewsErr } = await (supabase.from('reviews' as any) as any).insert(reviews);
+  if (reviewsErr) throw new Error(`Reviews: ${reviewsErr.message}`);
+
+  // 14. Branches
+  const branchesData = [
+    { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80', sort_order: 1 },
+    { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002', image_url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80', sort_order: 2 },
+    { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003', image_url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80', sort_order: 3 },
+  ].map(b => ({ ...b, user_id: userId }));
+
+  const { error: branchesErr } = await (supabase.from('branches' as any) as any).insert(branchesData);
+  if (branchesErr) throw new Error(`Branches: ${branchesErr.message}`);
 
   return {
     members: insertedMembers.length,

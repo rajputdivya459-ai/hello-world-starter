@@ -19,6 +19,9 @@ import { Lightbox } from '@/components/Lightbox';
 import { PageLoader } from '@/components/PageLoader';
 import { PublicNavbar } from '@/components/PublicNavbar';
 import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
+import { PricingSection } from '@/components/landing/PricingSection';
+import { ReviewsCarousel } from '@/components/landing/ReviewsCarousel';
+import { BranchesSection } from '@/components/landing/BranchesSection';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
@@ -417,42 +420,11 @@ export default function LandingPage() {
       )}
 
       {data?.pricing && (data?.plans?.length ?? 0) > 0 && (
-        <section id="pricing" className="py-28 px-4 sm:px-6 lg:px-8 relative">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
-          </div>
-          <div className="max-w-7xl mx-auto relative z-10">
-            <SectionHeader tag="Pricing" title={pricingContent.title || 'Choose Your Plan'} subtitle={pricingContent.subtitle || 'Flexible plans designed to fit your fitness journey.'} />
-            {pricingContent.cta_note && <p className="text-center -mt-10 mb-16 text-primary/80 font-semibold text-sm">{pricingContent.cta_note}</p>}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {data!.plans.map((plan: any, i: number) => {
-                const isPopular = i === Math.floor((data!.plans.length - 1) / 2);
-                return (
-                  <AnimatedSection key={plan.id} delay={i * 0.12}>
-                    <div className={`relative rounded-2xl p-8 text-center space-y-6 transition-all duration-300 hover:-translate-y-2 ${isPopular ? 'bg-gradient-to-b from-primary/15 to-ws-card border-2 border-primary/50 shadow-2xl shadow-primary/10' : 'bg-ws-card border border-ws-border hover:border-ws-border-light'}`}>
-                      {isPopular && (
-                        <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-5 py-1.5 bg-gradient-to-r from-primary to-highlight text-primary-foreground text-xs font-bold rounded-full uppercase tracking-wider shadow-lg">Most Popular</div>
-                      )}
-                      <h3 className="font-display font-semibold text-xl">{plan.name}</h3>
-                      <div>
-                        <span className="text-5xl font-bold font-display">₹{plan.price}</span>
-                        <span className="text-ws-text-dim ml-1 text-sm">/ {plan.duration_days} days</span>
-                      </div>
-                      <ul className="text-left space-y-3 text-sm text-ws-text-muted">
-                        <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-primary shrink-0" /> Full gym access</li>
-                        <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-primary shrink-0" /> Expert guidance</li>
-                        <li className="flex items-center gap-2"><ChevronRight className="h-4 w-4 text-primary shrink-0" /> Diet consultation</li>
-                      </ul>
-                      <Button className={`w-full h-12 rounded-xl font-bold transition-all duration-200 ${isPopular ? 'shadow-lg shadow-primary/25' : 'bg-ws-border text-ws-text hover:bg-ws-border-light'}`} onClick={() => scrollTo('lead-form')}>
-                        Get Started <ChevronRight className="ml-1 h-4 w-4" />
-                      </Button>
-                    </div>
-                  </AnimatedSection>
-                );
-              })}
-            </div>
-          </div>
-        </section>
+        <PricingSection
+          plans={data!.plans}
+          content={pricingContent}
+          onCtaClick={() => scrollTo('lead-form')}
+        />
       )}
 
       {/* ─── TRAINERS ─── */}
@@ -575,72 +547,16 @@ export default function LandingPage() {
 
       {/* ─── GOOGLE REVIEWS ─── */}
       {data?.reviews && (reviewsContent.items?.length ?? 0) > 0 && (
-        <section id="reviews" className="py-28 px-4 sm:px-6 lg:px-8 relative">
-          <div className="absolute inset-0 pointer-events-none">
-            <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] bg-primary/5 rounded-full blur-[150px]" />
-          </div>
-          <div className="max-w-7xl mx-auto relative z-10">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Trusted By Many</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{reviewsContent.title || 'Google Reviews'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{reviewsContent.subtitle || 'See what our members say about us.'}</p>
-            </AnimatedSection>
-            <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:mx-0 lg:px-0">
-              {reviewsContent.items.map((r, i) => (
-                <AnimatedSection key={i} delay={i * 0.08} className="min-w-[300px] snap-center flex-shrink-0 lg:min-w-0">
-                  <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-4 hover:border-primary/30 transition-colors duration-300 h-full flex flex-col">
-                    <div className="flex gap-1">
-                      {[...Array(5)].map((_, j) => (
-                        <Star key={j} className={`h-5 w-5 ${j < r.rating ? 'fill-yellow-400 text-yellow-400' : 'fill-ws-text-icon text-ws-text-icon'}`} />
-                      ))}
-                    </div>
-                    {r.text && <p className="text-ws-text-label leading-relaxed flex-1 text-sm">"{r.text}"</p>}
-                    <div className="flex items-center gap-3 pt-4 border-t border-ws-border">
-                      <div className="h-10 w-10 rounded-full bg-gradient-to-br from-blue-500/20 to-primary/20 flex items-center justify-center text-sm font-bold text-primary">
-                        {r.name.charAt(0).toUpperCase()}
-                      </div>
-                      <div>
-                        <p className="font-display font-semibold text-sm">{r.name}</p>
-                        <p className="text-xs text-ws-text-dimmer">Google Review</p>
-                      </div>
-                    </div>
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
-        </section>
+        <ReviewsCarousel reviews={reviewsContent.items} content={reviewsContent} />
       )}
 
       {/* ─── BRANCHES ─── */}
       {data?.branches && (branchesContent.items?.length ?? 0) > 0 && (
-        <section id="branches" className="py-28 px-4 sm:px-6 lg:px-8 bg-ws-card-alt">
-          <div className="max-w-7xl mx-auto">
-            <AnimatedSection className="text-center mb-16">
-              <p className="text-primary font-bold text-sm uppercase tracking-[0.2em] mb-4">Locations</p>
-              <h2 className="text-4xl sm:text-5xl font-bold font-display">{branchesContent.title || 'Our Branches'}</h2>
-              <p className="mt-5 text-ws-text-subtle max-w-xl mx-auto text-lg">{branchesContent.subtitle || 'Find a location near you.'}</p>
-            </AnimatedSection>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {branchesContent.items.map((b, i) => (
-                <AnimatedSection key={i} delay={i * 0.08}>
-                  <div className="rounded-2xl bg-ws-card border border-ws-border p-8 space-y-4 hover:border-primary/40 transition-all duration-300 hover:-translate-y-1">
-                    <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-primary/10">
-                      <MapPin className="h-6 w-6 text-primary" />
-                    </div>
-                    <h3 className="font-display font-bold text-xl">{b.name}</h3>
-                    {b.location && <p className="text-sm text-ws-text-subtle leading-relaxed">{b.location}</p>}
-                    {b.contact && (
-                      <p className="text-sm text-ws-text-muted flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-primary shrink-0" /> {b.contact}
-                      </p>
-                    )}
-                  </div>
-                </AnimatedSection>
-              ))}
-            </div>
-          </div>
-        </section>
+        <BranchesSection
+          branches={branchesContent.items}
+          content={branchesContent}
+          totalCount={branchesContent.items.length}
+        />
       )}
 
       {/* ─── CTA BLOCK ─── */}
