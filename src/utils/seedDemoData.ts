@@ -361,6 +361,29 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
   }, { onConflict: 'user_id' });
   if (settingsErr) throw new Error(`Gym Settings: ${settingsErr.message}`);
 
+  // 13. Reviews
+  const reviews = [
+    { name: 'Amit Sharma', rating: 5, text: 'Best gym experience I have ever had. Spotlessly clean, well-equipped, and trainers who genuinely care about your progress.', sort_order: 1 },
+    { name: 'Priya Menon', rating: 5, text: 'Love the yoga and meditation classes. Very peaceful, professional, and the studio is beautiful.', sort_order: 2 },
+    { name: 'Rahul Kapoor', rating: 4, text: 'Great equipment and friendly staff. The CrossFit area is fantastic. Wish they had more parking space.', sort_order: 3 },
+    { name: 'Sneha Deshmukh', rating: 5, text: 'Completely transformed my body in 6 months. Down 20 kgs and feeling stronger than ever!', sort_order: 4 },
+    { name: 'Vijay Raman', rating: 4, text: 'Good variety of group classes. Would love if they added evening Zumba slots on weekends.', sort_order: 5 },
+    { name: 'Kavita Joshi', rating: 5, text: 'The personal trainers here are on another level. My trainer created a custom plan that actually works.', sort_order: 6 },
+  ].map(r => ({ ...r, user_id: userId }));
+
+  const { error: reviewsErr } = await (supabase.from('reviews' as any) as any).insert(reviews);
+  if (reviewsErr) throw new Error(`Reviews: ${reviewsErr.message}`);
+
+  // 14. Branches
+  const branchesData = [
+    { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80', sort_order: 1 },
+    { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002', image_url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80', sort_order: 2 },
+    { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003', image_url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80', sort_order: 3 },
+  ].map(b => ({ ...b, user_id: userId }));
+
+  const { error: branchesErr } = await (supabase.from('branches' as any) as any).insert(branchesData);
+  if (branchesErr) throw new Error(`Branches: ${branchesErr.message}`);
+
   return {
     members: insertedMembers.length,
     plans: insertedPlans.length,
