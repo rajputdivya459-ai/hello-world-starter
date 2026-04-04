@@ -19,6 +19,9 @@ import { Lightbox } from '@/components/Lightbox';
 import { PageLoader } from '@/components/PageLoader';
 import { PublicNavbar } from '@/components/PublicNavbar';
 import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
+import { PricingSection } from '@/components/landing/PricingSection';
+import { ReviewsCarousel } from '@/components/landing/ReviewsCarousel';
+import { BranchesSection } from '@/components/landing/BranchesSection';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
