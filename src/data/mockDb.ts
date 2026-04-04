@@ -92,9 +92,9 @@ export function createSeedData(): MockDb {
 
   // Plans
   const plans: PlanRow[] = [
-    { id: genId(), user_id: DEMO_USER_ID, name: 'Basic Plan', price: 999, duration_days: 30, created_at: nowIso },
-    { id: genId(), user_id: DEMO_USER_ID, name: 'Standard Plan', price: 1999, duration_days: 90, created_at: nowIso },
-    { id: genId(), user_id: DEMO_USER_ID, name: 'Premium Plan', price: 4999, duration_days: 365, created_at: nowIso },
+    { id: genId(), user_id: DEMO_USER_ID, name: 'Basic Monthly', price: 999, duration_days: 30, category: 'Monthly', benefits: ['Full gym access', 'Locker facility', 'Basic fitness assessment'], is_highlighted: false, created_at: nowIso },
+    { id: genId(), user_id: DEMO_USER_ID, name: 'Standard Quarterly', price: 2499, duration_days: 90, category: 'Quarterly', benefits: ['Full gym access', 'Personal trainer (2x/week)', 'Diet consultation', 'Steam & sauna'], is_highlighted: true, created_at: nowIso },
+    { id: genId(), user_id: DEMO_USER_ID, name: 'Premium Yearly', price: 7999, duration_days: 365, category: 'Yearly', benefits: ['Unlimited gym access', 'Dedicated personal trainer', 'Monthly body analysis', 'Nutrition plan', 'Group classes', 'Guest passes'], is_highlighted: false, created_at: nowIso },
   ];
 
   const indianNames = [
