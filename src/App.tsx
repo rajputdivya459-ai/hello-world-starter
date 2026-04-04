@@ -18,6 +18,8 @@ import ContactSettingsPage from "./pages/ContactSettingsPage";
 import NotFound from "./pages/NotFound";
 import GalleryPage from "./pages/GalleryPage";
 import MemberProfilePage from "./pages/MemberProfilePage";
+import PublicPlansPage from "./pages/PublicPlansPage";
+import PublicBranchesPage from "./pages/PublicBranchesPage";
 
 const queryClient = new QueryClient();
 
