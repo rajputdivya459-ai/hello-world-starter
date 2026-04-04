@@ -396,6 +396,36 @@ export type Database = {
         }
         Relationships: []
       }
+      website_content: {
+        Row: {
+          content: Json
+          created_at: string
+          id: string
+          is_enabled: boolean
+          section_key: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          section_key: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: Json
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          section_key?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       website_sections: {
         Row: {
           content: string | null
