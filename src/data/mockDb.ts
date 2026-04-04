@@ -20,7 +20,8 @@ export interface GymSettingsRow {
   created_at: string; updated_at: string;
 }
 export interface PlanRow {
-  id: string; user_id: string; name: string; price: number; duration_days: number; created_at: string;
+  id: string; user_id: string; name: string; price: number; duration_days: number;
+  category?: string; benefits?: string[]; is_highlighted?: boolean; created_at: string;
 }
 export interface MemberRow {
   id: string; user_id: string; name: string; phone: string; plan_id: string | null;
