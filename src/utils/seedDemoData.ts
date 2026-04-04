@@ -41,7 +41,7 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
   if (plansErr) throw new Error(`Plans: ${plansErr.message}`);
   if (!insertedPlans?.length) throw new Error('Plans insert returned no data');
 
-  const planMap = { basic: insertedPlans[0].id, standard: insertedPlans[1].id, premium: insertedPlans[2].id };
+  const planMap = { basic: insertedPlans[0].id, standard: insertedPlans[1].id, premium: insertedPlans[2].id, couple: insertedPlans[3]?.id, female: insertedPlans[4]?.id, half: insertedPlans[5]?.id };
   const durationMap: Record<string, number> = { basic: 30, standard: 90, premium: 365 };
 
   // 2. Members (25 — mix of active, expiring, expired)
