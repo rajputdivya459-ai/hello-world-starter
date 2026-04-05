@@ -169,6 +169,9 @@ export default function LandingPage() {
     { icon_url: '', value: '4.8', label: 'Google Rating' },
   ] }) as StatsContent;
   const statsEnabled = data?.stats?.is_enabled !== false;
+  const footerSocialContent = (data?.footer_social?.content ?? { instagram_url: '', whatsapp_url: '', facebook_url: '', youtube_url: '', instagram_enabled: true, whatsapp_enabled: true, facebook_enabled: true, youtube_enabled: true }) as FooterSocialContent;
+  const supplementsContent = (data?.supplements?.content ?? { title: 'Recommended Supplements', subtitle: '', items: [] }) as SupplementsContent;
+  const achievementsContent = (data?.achievements?.content ?? { title: 'Achievements & Certifications', subtitle: '', items: [] }) as AchievementsContent;
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
