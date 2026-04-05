@@ -568,6 +568,16 @@ export default function LandingPage() {
         />
       )}
 
+      {/* ─── SUPPLEMENTS ─── */}
+      {data?.supplements && (supplementsContent.items?.length ?? 0) > 0 && (
+        <SupplementsSection content={supplementsContent} />
+      )}
+
+      {/* ─── ACHIEVEMENTS ─── */}
+      {data?.achievements && (achievementsContent.items?.length ?? 0) > 0 && (
+        <AchievementsSection content={achievementsContent} />
+      )}
+
       {/* ─── CTA BLOCK ─── */}
       <section className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
