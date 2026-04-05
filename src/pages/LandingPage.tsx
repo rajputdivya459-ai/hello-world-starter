@@ -138,6 +138,9 @@ export default function LandingPage() {
         navbar: getSection('navbar'),
         loader: getSection('loader'),
         stats: getSection('stats'),
+        footer_social: getSection('footer_social'),
+        supplements: getSection('supplements'),
+        achievements: getSection('achievements'),
       };
     },
   });
