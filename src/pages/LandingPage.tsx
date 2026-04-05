@@ -12,7 +12,7 @@ import {
   Dumbbell, Send, ChevronRight, Users, Award, Calendar, Star, ArrowRight, Play, Phone, User, Target,
   MapPin, Mail, Clock, Image as ImageIcon,
 } from 'lucide-react';
-import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, StatsContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
+import type { HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent, GalleryMediaItem, ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, OrbitContent, NavbarContent, LoaderContent, StatsContent, FooterSocialContent, SupplementsContent, AchievementsContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 import { VideoEmbed } from '@/components/VideoEmbed';
 import OrbitAnimation from '@/components/OrbitAnimation';
 import { Lightbox } from '@/components/Lightbox';
@@ -22,6 +22,9 @@ import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
 import { PricingSection } from '@/components/landing/PricingSection';
 import { ReviewsCarousel } from '@/components/landing/ReviewsCarousel';
 import { BranchesSection } from '@/components/landing/BranchesSection';
+import { SupplementsSection } from '@/components/landing/SupplementsSection';
+import { AchievementsSection } from '@/components/landing/AchievementsSection';
+import { FooterSocial } from '@/components/landing/FooterSocial';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
@@ -135,6 +138,9 @@ export default function LandingPage() {
         navbar: getSection('navbar'),
         loader: getSection('loader'),
         stats: getSection('stats'),
+        footer_social: getSection('footer_social'),
+        supplements: getSection('supplements'),
+        achievements: getSection('achievements'),
       };
     },
   });
@@ -163,6 +169,9 @@ export default function LandingPage() {
     { icon_url: '', value: '4.8', label: 'Google Rating' },
   ] }) as StatsContent;
   const statsEnabled = data?.stats?.is_enabled !== false;
+  const footerSocialContent = (data?.footer_social?.content ?? { instagram_url: '', whatsapp_url: '', facebook_url: '', youtube_url: '', instagram_enabled: true, whatsapp_enabled: true, facebook_enabled: true, youtube_enabled: true }) as FooterSocialContent;
+  const supplementsContent = (data?.supplements?.content ?? { title: 'Recommended Supplements', subtitle: '', items: [] }) as SupplementsContent;
+  const achievementsContent = (data?.achievements?.content ?? { title: 'Achievements & Certifications', subtitle: '', items: [] }) as AchievementsContent;
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -559,6 +568,16 @@ export default function LandingPage() {
         />
       )}
 
+      {/* ─── SUPPLEMENTS ─── */}
+      {data?.supplements && (supplementsContent.items?.length ?? 0) > 0 && (
+        <SupplementsSection content={supplementsContent} />
+      )}
+
+      {/* ─── ACHIEVEMENTS ─── */}
+      {data?.achievements && (achievementsContent.items?.length ?? 0) > 0 && (
+        <AchievementsSection content={achievementsContent} />
+      )}
+
       {/* ─── CTA BLOCK ─── */}
       <section className="py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none">
@@ -659,6 +678,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 pt-8 border-t border-ws-border-dim flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-ws-text-micro">© {new Date().getFullYear()} {brandName}. All rights reserved.</p>
+            <FooterSocial content={footerSocialContent} />
             <Link to="/app/dashboard" className="text-xs text-ws-text-micro hover:text-primary transition-colors">
               Go to Dashboard
             </Link>

@@ -4,6 +4,7 @@ import {
   HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
   ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, StatsContent, StatItem,
   TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem, OrbitContent, OrbitIconItem, NavbarContent, LoaderContent,
+  FooterSocialContent, SupplementsContent, SupplementItem, AchievementsContent, AchievementItem,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -458,6 +459,61 @@ export default function WebsiteBuilderPage() {
               )}
             </SectionCard>
           </TabsContent>
+
+          {/* ─── FOOTER SOCIAL ─── */}
+          <TabsContent value="footer_social">
+            <SectionCard sectionKey="footer_social" toggles={toggles} setToggles={setToggles} onSave={() => save('footer_social')} saving={upsertSection.isPending}>
+              <p className="text-sm text-muted-foreground">Add social media links displayed in your website footer.</p>
+              <Field label="Instagram URL" value={drafts.footer_social?.instagram_url} onChange={v => updateDraft('footer_social', 'instagram_url', v)} placeholder="https://instagram.com/yourgym" />
+              <div className="flex items-center justify-between p-2 rounded border bg-muted/20">
+                <Label className="text-sm">Show Instagram</Label>
+                <Switch checked={drafts.footer_social?.instagram_enabled !== false} onCheckedChange={v => updateDraft('footer_social', 'instagram_enabled', v)} />
+              </div>
+              <Field label="WhatsApp Link" value={drafts.footer_social?.whatsapp_url} onChange={v => updateDraft('footer_social', 'whatsapp_url', v)} placeholder="https://wa.me/919876543210" />
+              <div className="flex items-center justify-between p-2 rounded border bg-muted/20">
+                <Label className="text-sm">Show WhatsApp</Label>
+                <Switch checked={drafts.footer_social?.whatsapp_enabled !== false} onCheckedChange={v => updateDraft('footer_social', 'whatsapp_enabled', v)} />
+              </div>
+              <Field label="Facebook URL" value={drafts.footer_social?.facebook_url} onChange={v => updateDraft('footer_social', 'facebook_url', v)} placeholder="https://facebook.com/yourgym" />
+              <div className="flex items-center justify-between p-2 rounded border bg-muted/20">
+                <Label className="text-sm">Show Facebook</Label>
+                <Switch checked={drafts.footer_social?.facebook_enabled !== false} onCheckedChange={v => updateDraft('footer_social', 'facebook_enabled', v)} />
+              </div>
+              <Field label="YouTube URL" value={drafts.footer_social?.youtube_url} onChange={v => updateDraft('footer_social', 'youtube_url', v)} placeholder="https://youtube.com/@yourgym" />
+              <div className="flex items-center justify-between p-2 rounded border bg-muted/20">
+                <Label className="text-sm">Show YouTube</Label>
+                <Switch checked={drafts.footer_social?.youtube_enabled !== false} onCheckedChange={v => updateDraft('footer_social', 'youtube_enabled', v)} />
+              </div>
+            </SectionCard>
+          </TabsContent>
+
+          {/* ─── SUPPLEMENTS ─── */}
+          <TabsContent value="supplements">
+            <SectionCard sectionKey="supplements" toggles={toggles} setToggles={setToggles} onSave={() => save('supplements')} saving={upsertSection.isPending}>
+              <Field label="Section Title" value={drafts.supplements?.title} onChange={v => updateDraft('supplements', 'title', v)} />
+              <Field label="Subtitle" value={drafts.supplements?.subtitle} onChange={v => updateDraft('supplements', 'subtitle', v)} />
+              <ItemList
+                items={drafts.supplements?.items ?? []}
+                onRemove={i => removeItem('supplements', i)}
+                renderItem={(item: SupplementItem) => `${item.title}${item.external_link ? ' → ' + item.external_link.slice(0, 30) + '...' : ''}`}
+              />
+              <AddSupplementForm onAdd={item => addItem('supplements', item)} />
+            </SectionCard>
+          </TabsContent>
+
+          {/* ─── ACHIEVEMENTS ─── */}
+          <TabsContent value="achievements">
+            <SectionCard sectionKey="achievements" toggles={toggles} setToggles={setToggles} onSave={() => save('achievements')} saving={upsertSection.isPending}>
+              <Field label="Section Title" value={drafts.achievements?.title} onChange={v => updateDraft('achievements', 'title', v)} />
+              <Field label="Subtitle" value={drafts.achievements?.subtitle} onChange={v => updateDraft('achievements', 'subtitle', v)} />
+              <ItemList
+                items={drafts.achievements?.items ?? []}
+                onRemove={i => removeItem('achievements', i)}
+                renderItem={(item: AchievementItem) => `${item.title}${item.description ? ' — ' + item.description.slice(0, 40) + '...' : ''}`}
+              />
+              <AddAchievementForm onAdd={item => addItem('achievements', item)} />
+            </SectionCard>
+          </TabsContent>
         </Tabs>
       )}
     </div>
@@ -637,6 +693,52 @@ function AddEquipmentForm({ onAdd }: { onAdd: (item: EquipmentItem) => void }) {
       </div>
       <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description (optional)" rows={2} />
       <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Equipment</Button>
+    </div>
+  );
+}
+
+function AddSupplementForm({ onAdd }: { onAdd: (item: SupplementItem) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [link, setLink] = useState('');
+  const add = () => {
+    if (!title.trim()) return;
+    onAdd({ title: title.trim(), description: description || undefined, image_url: imageUrl || undefined, external_link: link || undefined });
+    setTitle(''); setDescription(''); setImageUrl(''); setLink('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium">Add Supplement</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Product title" />
+        <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="Image URL" />
+      </div>
+      <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description" rows={2} />
+      <Input value={link} onChange={e => setLink(e.target.value)} placeholder="Buy link (external URL)" />
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Supplement</Button>
+    </div>
+  );
+}
+
+function AddAchievementForm({ onAdd }: { onAdd: (item: AchievementItem) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const add = () => {
+    if (!title.trim()) return;
+    onAdd({ title: title.trim(), description: description || undefined, image_url: imageUrl || undefined });
+    setTitle(''); setDescription(''); setImageUrl('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium">Add Achievement / Certification</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Certificate title" />
+        <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="Image/Logo URL" />
+      </div>
+      <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} />
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Achievement</Button>
     </div>
   );
 }
