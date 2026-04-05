@@ -22,6 +22,9 @@ import { PremiumCard, SectionHeader } from '@/components/PremiumCard';
 import { PricingSection } from '@/components/landing/PricingSection';
 import { ReviewsCarousel } from '@/components/landing/ReviewsCarousel';
 import { BranchesSection } from '@/components/landing/BranchesSection';
+import { SupplementsSection } from '@/components/landing/SupplementsSection';
+import { AchievementsSection } from '@/components/landing/AchievementsSection';
+import { FooterSocial } from '@/components/landing/FooterSocial';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
