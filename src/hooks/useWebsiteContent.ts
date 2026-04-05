@@ -72,9 +72,15 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
     { icon_url: '', value: '5+', label: 'Years Experience' },
     { icon_url: '', value: '4.8', label: 'Google Rating' },
   ] } as StatsContent },
+  footer_social: { label: 'Footer Social', defaultContent: {
+    instagram_url: '', whatsapp_url: '', facebook_url: '', youtube_url: '',
+    instagram_enabled: true, whatsapp_enabled: true, facebook_enabled: true, youtube_enabled: true,
+  } as FooterSocialContent },
+  supplements: { label: 'Supplements', defaultContent: { title: 'Recommended Supplements', subtitle: 'Fuel your gains with our top picks.', items: [] } as SupplementsContent },
+  achievements: { label: 'Achievements', defaultContent: { title: 'Achievements & Certifications', subtitle: 'Our credentials speak for themselves.', items: [] } as AchievementsContent },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader', 'stats'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader', 'stats', 'footer_social', 'supplements', 'achievements'];
 
 export function useWebsiteContent() {
   const { toast } = useToast();
