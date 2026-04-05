@@ -4,6 +4,7 @@ import {
   HeroContent, SocialProofConfig, PricingContent, TrainersContent, TestimonialsContent, GalleryContent,
   ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, StatsContent, StatItem,
   TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem, OrbitContent, OrbitIconItem, NavbarContent, LoaderContent,
+  FooterSocialContent, SupplementsContent, SupplementItem, AchievementsContent, AchievementItem,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
