@@ -19,15 +19,16 @@ export default function Dashboard() {
   const { toast } = useToast();
   const qc = useQueryClient();
 
-  const handleSeed = () => {
+  const handleSeed = async () => {
+    resetDemoData();
     seedDemoData();
-    qc.invalidateQueries();
-    toast({ title: '✅ Demo data loaded!' });
+    await qc.resetQueries();
+    toast({ title: '✅ Demo data loaded successfully!' });
   };
 
-  const handleReset = () => {
+  const handleReset = async () => {
     resetDemoData();
-    qc.invalidateQueries();
+    await qc.resetQueries();
     toast({ title: '🗑️ All data cleared!' });
   };
 
