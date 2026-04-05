@@ -678,6 +678,7 @@ export default function LandingPage() {
           </div>
           <div className="mt-12 pt-8 border-t border-ws-border-dim flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-xs text-ws-text-micro">© {new Date().getFullYear()} {brandName}. All rights reserved.</p>
+            <FooterSocial content={footerSocialContent} />
             <Link to="/app/dashboard" className="text-xs text-ws-text-micro hover:text-primary transition-colors">
               Go to Dashboard
             </Link>
