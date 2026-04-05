@@ -697,6 +697,52 @@ function AddEquipmentForm({ onAdd }: { onAdd: (item: EquipmentItem) => void }) {
   );
 }
 
+function AddSupplementForm({ onAdd }: { onAdd: (item: SupplementItem) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [link, setLink] = useState('');
+  const add = () => {
+    if (!title.trim()) return;
+    onAdd({ title: title.trim(), description: description || undefined, image_url: imageUrl || undefined, external_link: link || undefined });
+    setTitle(''); setDescription(''); setImageUrl(''); setLink('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium">Add Supplement</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Product title" />
+        <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="Image URL" />
+      </div>
+      <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description" rows={2} />
+      <Input value={link} onChange={e => setLink(e.target.value)} placeholder="Buy link (external URL)" />
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Supplement</Button>
+    </div>
+  );
+}
+
+function AddAchievementForm({ onAdd }: { onAdd: (item: AchievementItem) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const add = () => {
+    if (!title.trim()) return;
+    onAdd({ title: title.trim(), description: description || undefined, image_url: imageUrl || undefined });
+    setTitle(''); setDescription(''); setImageUrl('');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium">Add Achievement / Certification</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Certificate title" />
+        <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="Image/Logo URL" />
+      </div>
+      <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Description (optional)" rows={2} />
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Achievement</Button>
+    </div>
+  );
+}
+
 function AddReviewForm({ onAdd }: { onAdd: (item: ReviewItem) => void }) {
   const [name, setName] = useState('');
   const [rating, setRating] = useState(5);
