@@ -338,6 +338,40 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
         ],
       },
     },
+    {
+      section_key: 'footer_social', is_enabled: true,
+      content: {
+        instagram_url: 'https://instagram.com/elitefitness',
+        whatsapp_url: 'https://wa.me/919876543210',
+        facebook_url: 'https://facebook.com/elitefitness',
+        youtube_url: 'https://youtube.com/@elitefitness',
+        instagram_enabled: true, whatsapp_enabled: true, facebook_enabled: true, youtube_enabled: true,
+      },
+    },
+    {
+      section_key: 'supplements', is_enabled: true,
+      content: {
+        title: 'Recommended Supplements',
+        subtitle: 'Fuel your gains with our top picks.',
+        items: [
+          { title: 'Whey Protein Isolate', description: 'High-quality 25g protein per scoop with zero sugar. Perfect for post-workout recovery.', image_url: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=600&q=80', external_link: 'https://www.amazon.in' },
+          { title: 'Creatine Monohydrate', description: 'Boost strength and power output by 10-15%. The most researched supplement.', image_url: 'https://images.unsplash.com/photo-1579722820903-1ccc12e1b836?w=600&q=80', external_link: 'https://www.amazon.in' },
+          { title: 'Pre-Workout Energy', description: 'Clean energy blend with caffeine, beta-alanine, and citrulline for explosive workouts.', image_url: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&q=80', external_link: 'https://www.amazon.in' },
+        ],
+      },
+    },
+    {
+      section_key: 'achievements', is_enabled: true,
+      content: {
+        title: 'Achievements & Certifications',
+        subtitle: 'Our credentials speak for themselves.',
+        items: [
+          { title: 'ACE Certified Facility', description: 'Accredited by the American Council on Exercise for meeting global safety and training standards.', image_url: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=200&q=80' },
+          { title: 'ISO 9001:2015', description: 'Quality management certification ensuring consistent service delivery and member satisfaction.', image_url: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&q=80' },
+          { title: 'Best Gym Award 2025', description: 'Awarded "Best Fitness Center" by the City Health & Wellness Council for three consecutive years.', image_url: 'https://images.unsplash.com/photo-1533228876829-65c94e7b5025?w=200&q=80' },
+        ],
+      },
+    },
   ].map(wc => ({ ...wc, content: wc.content as any, user_id: userId }));
 
   const { error: wcErr } = await supabase.from('website_content').insert(websiteContent);
