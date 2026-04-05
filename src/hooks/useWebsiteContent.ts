@@ -37,8 +37,16 @@ export interface NavbarContent { logo_url?: string; brand_name?: string; cta_tex
 export interface LoaderContent { enabled?: boolean; text?: string; icon_url?: string; duration?: number; }
 export interface StatItem { icon_url?: string; value: string; label: string; }
 export interface StatsContent { title?: string; items: StatItem[]; }
+export interface FooterSocialContent {
+  instagram_url?: string; whatsapp_url?: string; facebook_url?: string; youtube_url?: string;
+  instagram_enabled?: boolean; whatsapp_enabled?: boolean; facebook_enabled?: boolean; youtube_enabled?: boolean;
+}
+export interface SupplementItem { title: string; description?: string; image_url?: string; external_link?: string; }
+export interface SupplementsContent { title?: string; subtitle?: string; items: SupplementItem[]; }
+export interface AchievementItem { title: string; description?: string; image_url?: string; }
+export interface AchievementsContent { title?: string; subtitle?: string; items: AchievementItem[]; }
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats';
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats' | 'footer_social' | 'supplements' | 'achievements';
 
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: SectionKey; is_enabled: boolean;
