@@ -16,6 +16,7 @@ export function SetupBanner() {
 
   const handleSeed = () => {
     setSeeding(true);
+    resetDemoData();
     seedDemoData();
     setDone(true);
     setTimeout(() => window.location.reload(), 500);
