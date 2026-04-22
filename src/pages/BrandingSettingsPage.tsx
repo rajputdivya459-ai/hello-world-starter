@@ -50,6 +50,10 @@ export default function BrandingSettingsPage() {
   const [secondaryColor, setSecondaryColor] = useState('');
   const [accentColor, setAccentColor] = useState('');
   const [highlightColor, setHighlightColor] = useState('');
+  const [cardColor, setCardColor] = useState('');
+  const [headingColor, setHeadingColor] = useState('');
+  const [descriptionColor, setDescriptionColor] = useState('');
+  const [buttonColor, setButtonColor] = useState('');
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const [initialized, setInitialized] = useState(false);
 
@@ -61,6 +65,10 @@ export default function BrandingSettingsPage() {
       setSecondaryColor(resolved.secondary_color);
       setAccentColor(resolved.accent_color);
       setHighlightColor(resolved.highlight_color);
+      setCardColor(resolved.card_color ?? '');
+      setHeadingColor(resolved.heading_color ?? '');
+      setDescriptionColor(resolved.description_color ?? '');
+      setButtonColor(resolved.button_color ?? '');
       setInitialized(true);
     }
   }, [isLoading, initialized, resolved]);
@@ -81,6 +89,10 @@ export default function BrandingSettingsPage() {
       secondary_color: secondaryColor,
       accent_color: accentColor,
       highlight_color: highlightColor,
+      card_color: cardColor.trim() || null,
+      heading_color: headingColor.trim() || null,
+      description_color: descriptionColor.trim() || null,
+      button_color: buttonColor.trim() || null,
     });
   };
 
@@ -152,15 +164,22 @@ export default function BrandingSettingsPage() {
                 { label: 'Background (Secondary)', value: secondaryColor, set: setSecondaryColor },
                 { label: 'Accent Color', value: accentColor, set: setAccentColor },
                 { label: 'Highlight Color', value: highlightColor, set: setHighlightColor },
+                { label: 'Card Background (optional)', value: cardColor, set: setCardColor },
+                { label: 'Heading Color (optional)', value: headingColor, set: setHeadingColor },
+                { label: 'Description Color (optional)', value: descriptionColor, set: setDescriptionColor },
+                { label: 'Button Color (optional)', value: buttonColor, set: setButtonColor },
               ].map(c => (
                 <div key={c.label} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg border border-border shrink-0" style={{ background: hslToCss(c.value) }} />
+                  <div className="h-8 w-8 rounded-lg border border-border shrink-0" style={{ background: c.value ? hslToCss(c.value) : 'transparent' }} />
                   <div className="flex-1">
                     <Label className="text-xs">{c.label}</Label>
                     <Input value={c.value} onChange={e => { c.set(e.target.value); setActivePreset(null); }} className="h-8 text-xs" placeholder="142 71% 45%" />
                   </div>
                 </div>
               ))}
+              <p className="text-xs text-muted-foreground">
+                Optional fields override their derived defaults. Leave blank to auto-derive from Primary/Accent.
+              </p>
             </CardContent>
           </Card>
 

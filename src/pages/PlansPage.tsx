@@ -16,7 +16,7 @@ const CATEGORIES = ['general', 'Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 
 
 function PlanForm({ plan, onSubmit, onCancel }: {
   plan?: Plan;
-  onSubmit: (data: { name: string; price: number; duration_days: number; category: string; benefits: string[]; is_highlighted: boolean }) => void;
+  onSubmit: (data: { name: string; price: number; duration_days: number; category: string; benefits: string[]; is_highlighted: boolean; show_on_homepage: boolean }) => void;
   onCancel: () => void;
 }) {
   const [name, setName] = useState(plan?.name ?? '');
@@ -25,6 +25,7 @@ function PlanForm({ plan, onSubmit, onCancel }: {
   const [category, setCategory] = useState((plan as any)?.category ?? 'general');
   const [benefits, setBenefits] = useState<string[]>((plan as any)?.benefits ?? []);
   const [isHighlighted, setIsHighlighted] = useState((plan as any)?.is_highlighted ?? false);
+  const [showOnHomepage, setShowOnHomepage] = useState((plan as any)?.show_on_homepage ?? false);
   const [newBenefit, setNewBenefit] = useState('');
 
   const addBenefit = () => {
@@ -40,7 +41,7 @@ function PlanForm({ plan, onSubmit, onCancel }: {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit({ name, price: parseFloat(price), duration_days: parseInt(duration), category, benefits, is_highlighted: isHighlighted });
+    onSubmit({ name, price: parseFloat(price), duration_days: parseInt(duration), category, benefits, is_highlighted: isHighlighted, show_on_homepage: showOnHomepage });
   };
 
   return (
@@ -98,6 +99,12 @@ function PlanForm({ plan, onSubmit, onCancel }: {
           <Crown className="h-4 w-4 text-primary" /> Mark as "Most Popular"
         </Label>
       </div>
+      <div className="flex items-center gap-3">
+        <Switch checked={showOnHomepage} onCheckedChange={setShowOnHomepage} />
+        <Label className="flex items-center gap-1.5">
+          🏠 Show on Homepage
+        </Label>
+      </div>
       <div className="flex gap-2 justify-end pt-2">
         <Button type="button" variant="outline" onClick={onCancel}>Cancel</Button>
         <Button type="submit">{plan ? 'Update' : 'Create'} Plan</Button>
@@ -115,7 +122,7 @@ export default function PlansPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingPlan, setEditingPlan] = useState<Plan | undefined>();
 
-  const handleSubmit = async (data: { name: string; price: number; duration_days: number; category: string; benefits: string[]; is_highlighted: boolean }) => {
+  const handleSubmit = async (data: { name: string; price: number; duration_days: number; category: string; benefits: string[]; is_highlighted: boolean; show_on_homepage: boolean }) => {
     try {
       if (editingPlan) {
         await updatePlan.mutateAsync({ id: editingPlan.id, ...data });
@@ -174,6 +181,7 @@ export default function PlansPage() {
                   <TableHead>Price</TableHead>
                   <TableHead>Duration</TableHead>
                   <TableHead>Category</TableHead>
+                  <TableHead>Homepage</TableHead>
                   <TableHead>Highlight</TableHead>
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
@@ -186,6 +194,9 @@ export default function PlansPage() {
                     <TableCell>{plan.duration_days} days</TableCell>
                     <TableCell>
                       <Badge variant="outline" className="capitalize">{plan.category || 'general'}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      {plan.show_on_homepage && <span className="text-primary font-medium text-sm">🏠 Yes</span>}
                     </TableCell>
                     <TableCell>
                       {plan.is_highlighted && <Crown className="h-4 w-4 text-primary" />}

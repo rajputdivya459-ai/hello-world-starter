@@ -1,11 +1,11 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { motion, useInView } from 'framer-motion';
 import { ArrowLeft, Check, Crown, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { supabase } from '@/integrations/supabase/client';
 import { usePublicGymSettings } from '@/hooks/useGymSettings';
+import * as ds from '@/services/dataService';
 
 interface Plan {
   id: string;
@@ -17,22 +17,18 @@ interface Plan {
   is_highlighted?: boolean;
 }
 
-const CATEGORY_ORDER = ['Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 'Male', 'Female', 'Couple', 'general'];
+const CATEGORY_ORDER = ['Monthly', 'Quarterly', 'Half-Yearly', 'Yearly', 'Male', 'Female', 'Couple', 'Student', 'general'];
 
 export default function PublicPlansPage() {
+  const navigate = useNavigate();
   const { data: gymBranding } = usePublicGymSettings();
   const brandName = gymBranding?.gym_name || 'GymOS';
 
   const { data: plans = [], isLoading } = useQuery({
     queryKey: ['public-plans'],
-    queryFn: async () => {
-      const { data, error } = await (supabase.from('plans' as any) as any).select('*').order('price');
-      if (error) throw error;
-      return data as Plan[];
-    },
+    queryFn: () => ds.getPlans() as Promise<Plan[]>,
   });
 
-  // Group by category
   const categories = new Map<string, Plan[]>();
   plans.forEach(p => {
     const cat = p.category || 'general';
@@ -45,14 +41,21 @@ export default function PublicPlansPage() {
     return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
   });
 
+  const handleBackToPricing = () => {
+    navigate('/#pricing');
+    setTimeout(() => {
+      const el = document.getElementById('pricing');
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  };
+
   return (
     <div className="min-h-screen bg-website-bg text-ws-text">
-      {/* Header */}
       <div className="border-b border-ws-border-dim bg-ws-darker/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-ws-text-muted hover:text-primary transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Back to {brandName}
-          </Link>
+          <button onClick={handleBackToPricing} className="flex items-center gap-2 text-ws-text-muted hover:text-primary transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Back to Pricing
+          </button>
         </div>
       </div>
 
@@ -104,8 +107,8 @@ function PlanCard({ plan, index }: { plan: Plan; index: number }) {
   return (
     <motion.div
       ref={ref}
-      initial={{ opacity: 0, y: 30 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
+      initial={{ opacity: 0, scale: 0.98, y: 20 }}
+      animate={isInView ? { opacity: 1, scale: 1, y: 0 } : {}}
       transition={{ duration: 0.7, delay: index * 0.1, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -6, transition: { duration: 0.3 } }}
       className="h-full"

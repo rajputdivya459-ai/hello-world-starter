@@ -9,6 +9,7 @@ export interface Plan {
   category?: string;
   benefits?: string[];
   is_highlighted?: boolean;
+  show_on_homepage?: boolean;
   user_id: string;
   created_at: string;
 }
@@ -23,7 +24,7 @@ export function usePlans() {
 export function useCreatePlan() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (plan: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean }) => ds.createPlan(plan),
+    mutationFn: (plan: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }) => ds.createPlan(plan),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['plans'] }),
   });
 }
@@ -31,7 +32,7 @@ export function useCreatePlan() {
 export function useUpdatePlan() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: ({ id, ...plan }: { id: string; name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean }) =>
+    mutationFn: ({ id, ...plan }: { id: string; name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }) =>
       ds.updatePlan(id, plan),
     onSuccess: () => qc.invalidateQueries({ queryKey: ['plans'] }),
   });

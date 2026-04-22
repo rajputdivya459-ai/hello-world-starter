@@ -18,15 +18,18 @@ export function FooterSocial({ content }: Props) {
   const isInView = useInView(ref, { once: true, margin: '-40px' });
 
   const activeLinks = SOCIALS.filter(s => {
-    const enabled = (content as any)[s.enabledKey] !== false;
-    const url = (content as any)[s.urlKey];
-    return enabled && url;
-  });
+  const url = content?.[s.urlKey as keyof typeof content];
+  const enabled = content?.[s.enabledKey as keyof typeof content];
 
-  if (!activeLinks.length) return null;
+  return Boolean(url) && enabled !== false;
+});
+
+  if (!activeLinks.length) {
+  return <div>No social links configured</div>;
+}
 
   return (
-    <div ref={ref} className="flex items-center gap-3">
+    <div ref={ref} className="flex items-center gap-3 ">
       {activeLinks.map((social, i) => {
         const Icon = social.icon;
         const url = (content as any)[social.urlKey] as string;
@@ -38,10 +41,10 @@ export function FooterSocial({ content }: Props) {
             rel="noopener noreferrer"
             aria-label={social.label}
             initial={{ opacity: 0, y: 10 }}
-            animate={isInView ? { opacity: 1, y: 0 } : {}}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-            className="h-10 w-10 rounded-full bg-secondary/50 flex items-center justify-center text-ws-text-dimmer hover:text-primary hover:bg-primary/15 transition-colors duration-300"
+            className="h-10 w-10 rounded-full bg-secondary/50 flex items-center justify-center text-green-100 bg-green-500  transition-colors duration-300"
           >
             <Icon />
           </motion.a>

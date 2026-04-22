@@ -17,7 +17,7 @@ export async function getPlans(): Promise<PlanRow[]> {
   return [...db().plans].sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
-export async function createPlan(p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean }): Promise<PlanRow> {
+export async function createPlan(p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }): Promise<PlanRow> {
   await delay();
   const row: PlanRow = { id: genId(), user_id: 'demo-user', ...p, created_at: new Date().toISOString() };
   const d = db();
@@ -26,7 +26,7 @@ export async function createPlan(p: { name: string; price: number; duration_days
   return row;
 }
 
-export async function updatePlan(id: string, p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean }): Promise<PlanRow> {
+export async function updatePlan(id: string, p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }): Promise<PlanRow> {
   await delay();
   const d = db();
   const idx = d.plans.findIndex(x => x.id === id);

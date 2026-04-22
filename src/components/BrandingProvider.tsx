@@ -21,6 +21,15 @@ function hexToHSL(hex: string): string | null {
   return `${Math.round(h * 360)} ${Math.round(s * 100)}% ${Math.round(l * 100)}%`;
 }
 
+/** Accept either an HSL triple ("220 25% 8%") or a hex (#0F172A) and return HSL triple. */
+function toHsl(value?: string | null): string | null {
+  if (!value) return null;
+  const v = value.trim();
+  if (!v) return null;
+  if (v.startsWith('#')) return hexToHSL(v);
+  return v;
+}
+
 function deriveShades(primaryHex: string, secondaryHex: string) {
   const p = hexToHSL(primaryHex);
   const s = hexToHSL(secondaryHex);
@@ -73,11 +82,51 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
       });
     }
 
+    // ── Full design-token system ──────────────────────────────────────
+    // Background gradient (primary -> secondary)
+    const primaryHsl = resolved.primary_color;
+    const secondaryHsl = resolved.secondary_color;
+    root.style.setProperty(
+      '--bg-gradient',
+      `linear-gradient(to bottom, hsl(${primaryHsl}), hsl(${secondaryHsl}))`,
+    );
+
+    // Optional admin overrides (each falls back to a sensible derived value)
+    const cardOverride = toHsl(resolved.card_color);
+    if (cardOverride) {
+      root.style.setProperty('--card', cardOverride);
+      root.style.setProperty('--ws-card', cardOverride);
+    }
+
+    const headingOverride = toHsl(resolved.heading_color);
+    if (headingOverride) {
+      root.style.setProperty('--foreground', headingOverride);
+      root.style.setProperty('--ws-text', headingOverride);
+      root.style.setProperty('--card-foreground', headingOverride);
+    }
+
+    const descOverride = toHsl(resolved.description_color);
+    if (descOverride) {
+      root.style.setProperty('--muted-foreground', descOverride);
+      root.style.setProperty('--ws-text-muted', descOverride);
+      root.style.setProperty('--ws-text-label', descOverride);
+    }
+
+    const buttonOverride = toHsl(resolved.button_color);
+    if (buttonOverride) {
+      // Button color overrides primary (which drives all primary buttons)
+      root.style.setProperty('--primary', buttonOverride);
+      root.style.setProperty('--ring', buttonOverride);
+      root.style.setProperty('--accent', buttonOverride);
+    }
+
     return () => {
       ['--primary', '--ring', '--sidebar-primary', '--sidebar-ring', '--chart-1', '--accent', '--highlight',
        '--website-bg', '--website-bg-secondary',
        '--ws-card', '--ws-card-alt', '--ws-darker', '--ws-border', '--ws-border-light', '--ws-border-dim',
        '--ws-social-proof', '--ws-input',
+       '--bg-gradient', '--card', '--foreground', '--card-foreground',
+       '--ws-text', '--muted-foreground', '--ws-text-muted', '--ws-text-label',
       ].forEach(v => root.style.removeProperty(v));
     };
   }, [resolved, isLoading]);

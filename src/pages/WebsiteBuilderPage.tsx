@@ -5,6 +5,7 @@ import {
   ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, StatsContent, StatItem,
   TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem, OrbitContent, OrbitIconItem, NavbarContent, LoaderContent,
   FooterSocialContent, SupplementsContent, SupplementItem, AchievementsContent, AchievementItem,
+  ProductsContent, ProductItem,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -206,7 +207,7 @@ export default function WebsiteBuilderPage() {
               <ItemList
                 items={drafts.services?.items ?? []}
                 onRemove={i => removeItem('services', i)}
-                renderItem={(item: ServiceItem) => `${item.title}${item.description ? ` — ${item.description.slice(0, 40)}...` : ''}`}
+                renderItem={(item: ServiceItem) => `${item.title}${item.image_url ? ' 🖼️' : ''}${item.description ? ` — ${item.description.slice(0, 40)}...` : ''}`}
               />
               <AddServiceForm onAdd={item => addItem('services', item)} />
             </SectionCard>
@@ -514,6 +515,23 @@ export default function WebsiteBuilderPage() {
               <AddAchievementForm onAdd={item => addItem('achievements', item)} />
             </SectionCard>
           </TabsContent>
+
+          {/* ─── PRODUCTS ─── */}
+          <TabsContent value="products">
+            <SectionCard sectionKey="products" toggles={toggles} setToggles={setToggles} onSave={() => save('products')} saving={upsertSection.isPending}>
+              <Field label="Banner Title" value={drafts.products?.title} onChange={v => updateDraft('products', 'title', v)} placeholder="Shop Fitness Essentials" />
+              <Field label="Banner Subtitle" value={drafts.products?.subtitle} onChange={v => updateDraft('products', 'subtitle', v)} textarea />
+              <Field label="CTA Button Text" value={drafts.products?.cta_text} onChange={v => updateDraft('products', 'cta_text', v)} placeholder="Explore Products" />
+              <Field label="Coupon Highlight" value={drafts.products?.coupon_highlight} onChange={v => updateDraft('products', 'coupon_highlight', v)} placeholder="Use code GYM10 for 10% off" />
+              <Field label="Banner Background Images (one URL per line)" value={(drafts.products?.banner_images ?? []).join('\n')} onChange={v => updateDraft('products', 'banner_images', v.split('\n').map(s => s.trim()).filter(Boolean))} textarea />
+              <ItemList
+                items={drafts.products?.items ?? []}
+                onRemove={i => removeItem('products', i)}
+                renderItem={(item: ProductItem) => `${item.title}${item.coupon_code ? ' · 🎟 ' + item.coupon_code : ''}`}
+              />
+              <AddProductForm onAdd={item => addItem('products', item)} />
+            </SectionCard>
+          </TabsContent>
         </Tabs>
       )}
     </div>
@@ -717,6 +735,34 @@ function AddSupplementForm({ onAdd }: { onAdd: (item: SupplementItem) => void })
       <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description" rows={2} />
       <Input value={link} onChange={e => setLink(e.target.value)} placeholder="Buy link (external URL)" />
       <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Supplement</Button>
+    </div>
+  );
+}
+
+function AddProductForm({ onAdd }: { onAdd: (item: ProductItem) => void }) {
+  const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [buyLink, setBuyLink] = useState('');
+  const [coupon, setCoupon] = useState('GYM10');
+  const add = () => {
+    if (!title) return;
+    onAdd({ title, description, image_url: imageUrl, buy_link: buyLink, coupon_code: coupon });
+    setTitle(''); setDescription(''); setImageUrl(''); setBuyLink(''); setCoupon('GYM10');
+  };
+  return (
+    <div className="border rounded-lg p-4 space-y-3 bg-muted/20">
+      <p className="text-sm font-medium">Add Product</p>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={title} onChange={e => setTitle(e.target.value)} placeholder="Product title" />
+        <Input value={imageUrl} onChange={e => setImageUrl(e.target.value)} placeholder="Image URL" />
+      </div>
+      <Textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Short description" rows={2} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <Input value={buyLink} onChange={e => setBuyLink(e.target.value)} placeholder="Buy Now link (external URL)" />
+        <Input value={coupon} onChange={e => setCoupon(e.target.value)} placeholder="Coupon code (e.g. GYM10)" />
+      </div>
+      <Button size="sm" onClick={add}><Plus className="h-4 w-4 mr-1" />Add Product</Button>
     </div>
   );
 }

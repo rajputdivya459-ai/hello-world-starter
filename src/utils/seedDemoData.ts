@@ -30,9 +30,9 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
 
   // 1. Plans
   const plans = [
-    { name: 'Basic Monthly', price: 999, duration_days: 30, category: 'Monthly', benefits: ['Full gym access', 'Locker facility', 'Basic fitness assessment'], is_highlighted: false, user_id: userId },
-    { name: 'Standard Quarterly', price: 2499, duration_days: 90, category: 'Quarterly', benefits: ['Full gym access', 'Personal trainer (2x/week)', 'Diet consultation', 'Steam & sauna'], is_highlighted: true, user_id: userId },
-    { name: 'Premium Yearly', price: 7999, duration_days: 365, category: 'Yearly', benefits: ['Unlimited gym access', 'Dedicated personal trainer', 'Monthly body analysis', 'Nutrition plan', 'Group classes', 'Guest passes'], is_highlighted: false, user_id: userId },
+    { name: 'Basic Monthly', price: 999, duration_days: 30, category: 'Monthly', benefits: ['Full gym access', 'Locker facility', 'Basic fitness assessment'], is_highlighted: false, show_on_homepage: true, user_id: userId },
+    { name: 'Standard Quarterly', price: 2499, duration_days: 90, category: 'Quarterly', benefits: ['Full gym access', 'Personal trainer (2x/week)', 'Diet consultation', 'Steam & sauna'], is_highlighted: true, show_on_homepage: true, user_id: userId },
+    { name: 'Premium Yearly', price: 7999, duration_days: 365, category: 'Yearly', benefits: ['Unlimited gym access', 'Dedicated personal trainer', 'Monthly body analysis', 'Nutrition plan', 'Group classes', 'Guest passes'], is_highlighted: false, show_on_homepage: true, user_id: userId },
     { name: 'Couple Monthly', price: 1799, duration_days: 30, category: 'Couple', benefits: ['2 member access', 'Full gym access', 'Locker facility'], is_highlighted: false, user_id: userId },
     { name: 'Female Special', price: 1299, duration_days: 30, category: 'Female', benefits: ['Full gym access', 'Women-only hours', 'Zumba & yoga classes', 'Diet plan'], is_highlighted: false, user_id: userId },
     { name: 'Half-Yearly', price: 4499, duration_days: 180, category: 'Half-Yearly', benefits: ['Full gym access', 'Personal trainer (3x/week)', 'Diet consultation', 'Steam & sauna', 'Supplement discount'], is_highlighted: false, user_id: userId },
@@ -335,6 +335,9 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
           { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001' },
           { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002' },
           { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003' },
+          { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00004' },
+          { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00005' },
+          { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00006' },
         ],
       },
     },
@@ -357,6 +360,10 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
           { title: 'Whey Protein Isolate', description: 'High-quality 25g protein per scoop with zero sugar. Perfect for post-workout recovery.', image_url: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=600&q=80', external_link: 'https://www.amazon.in' },
           { title: 'Creatine Monohydrate', description: 'Boost strength and power output by 10-15%. The most researched supplement.', image_url: 'https://images.unsplash.com/photo-1579722820903-1ccc12e1b836?w=600&q=80', external_link: 'https://www.amazon.in' },
           { title: 'Pre-Workout Energy', description: 'Clean energy blend with caffeine, beta-alanine, and citrulline for explosive workouts.', image_url: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&q=80', external_link: 'https://www.amazon.in' },
+          { title: 'Whey Protein Isolate', description: 'High-quality 25g protein per scoop with zero sugar. Perfect for post-workout recovery.', image_url: 'https://images.unsplash.com/photo-1593095948071-474c5cc2989d?w=600&q=80', external_link: 'https://www.amazon.in' },
+          { title: 'Creatine Monohydrate', description: 'Boost strength and power output by 10-15%. The most researched supplement.', image_url: 'https://images.unsplash.com/photo-1579722820903-1ccc12e1b836?w=600&q=80', external_link: 'https://www.amazon.in' },
+          { title: 'Pre-Workout Energy', description: 'Clean energy blend with caffeine, beta-alanine, and citrulline for explosive workouts.', image_url: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&q=80', external_link: 'https://www.amazon.in' },
+          
         ],
       },
     },
@@ -366,6 +373,9 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
         title: 'Achievements & Certifications',
         subtitle: 'Our credentials speak for themselves.',
         items: [
+          { title: 'ACE Certified Facility', description: 'Accredited by the American Council on Exercise for meeting global safety and training standards.', image_url: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=200&q=80' },
+          { title: 'ISO 9001:2015', description: 'Quality management certification ensuring consistent service delivery and member satisfaction.', image_url: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&q=80' },
+          { title: 'Best Gym Award 2025', description: 'Awarded "Best Fitness Center" by the City Health & Wellness Council for three consecutive years.', image_url: 'https://images.unsplash.com/photo-1533228876829-65c94e7b5025?w=200&q=80' },
           { title: 'ACE Certified Facility', description: 'Accredited by the American Council on Exercise for meeting global safety and training standards.', image_url: 'https://images.unsplash.com/photo-1567427017947-545c5f8d16ad?w=200&q=80' },
           { title: 'ISO 9001:2015', description: 'Quality management certification ensuring consistent service delivery and member satisfaction.', image_url: 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=200&q=80' },
           { title: 'Best Gym Award 2025', description: 'Awarded "Best Fitness Center" by the City Health & Wellness Council for three consecutive years.', image_url: 'https://images.unsplash.com/photo-1533228876829-65c94e7b5025?w=200&q=80' },
@@ -410,6 +420,9 @@ export async function seedDemoData(userId: string, { reset = true }: { reset?: b
 
   // 14. Branches
   const branchesData = [
+    { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80', sort_order: 1 },
+    { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002', image_url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80', sort_order: 2 },
+    { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003', image_url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80', sort_order: 3 },
     { name: 'Elite Fitness — Koramangala', location: '4th Block, 80 Feet Road, Koramangala, Bangalore — 560034', contact: '+91 98765 00001', image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&q=80', sort_order: 1 },
     { name: 'Elite Fitness — Indiranagar', location: '12th Main Road, HAL 2nd Stage, Indiranagar, Bangalore — 560038', contact: '+91 98765 00002', image_url: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=600&q=80', sort_order: 2 },
     { name: 'Elite Fitness — HSR Layout', location: 'Sector 2, 27th Main Road, HSR Layout, Bangalore — 560102', contact: '+91 98765 00003', image_url: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=600&q=80', sort_order: 3 },

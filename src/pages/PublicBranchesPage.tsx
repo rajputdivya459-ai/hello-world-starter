@@ -1,22 +1,27 @@
 import { useRef } from 'react';
-import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { motion, useInView } from 'framer-motion';
 import { ArrowLeft, MapPin, Phone, Building2 } from 'lucide-react';
-import { usePublicBranches } from '@/hooks/useBranches';
-import { usePublicGymSettings } from '@/hooks/useGymSettings';
+import * as ds from '@/services/dataService';
+import type { BranchesContent, WebsiteContentRow } from '@/hooks/useWebsiteContent';
 
 export default function PublicBranchesPage() {
-  const { data: gymBranding } = usePublicGymSettings();
-  const brandName = gymBranding?.gym_name || 'GymOS';
-  const { data: branches = [], isLoading } = usePublicBranches();
+  const { data: branches = [], isLoading } = useQuery({
+    queryKey: ['public-branches-page'],
+    queryFn: async () => {
+      const content = await ds.getPublicWebsiteContent();
+      const row = (content as WebsiteContentRow[]).find(r => r.section_key === 'branches');
+      return ((row?.content as BranchesContent)?.items ?? []) as any[];
+    },
+  });
 
   return (
     <div className="min-h-screen bg-website-bg text-ws-text">
       <div className="border-b border-ws-border-dim bg-ws-darker/50 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-ws-text-muted hover:text-primary transition-colors">
-            <ArrowLeft className="h-4 w-4" /> Back to {brandName}
-          </Link>
+          <button onClick={() => { window.location.href = '/#branches'; }} className="flex items-center gap-2 text-ws-text-muted hover:text-primary transition-colors">
+            <ArrowLeft className="h-4 w-4" /> Back to Branches
+          </button>
         </div>
       </div>
 

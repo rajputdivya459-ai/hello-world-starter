@@ -50,6 +50,9 @@
     --website-bg: 222 47% 11%;
     --website-bg-secondary: 220 26% 14%;
 
+    /* Full theme gradient (overridden by BrandingProvider) */
+    --bg-gradient: linear-gradient(to bottom, hsl(var(--website-bg)), hsl(var(--website-bg-secondary)));
+
     /* Website derived shades */
     --ws-card: 220 25% 7%;
     --ws-card-alt: 220 25% 5%;
@@ -136,6 +139,13 @@
   body {
     @apply bg-background text-foreground font-body antialiased;
     font-family: var(--font-body);
+  }
+
+  /* Public website root inherits dual-tone gradient automatically */
+  body.theme-public {
+    background: var(--bg-gradient);
+    background-attachment: fixed;
+    color: hsl(var(--ws-text));
   }
 
   h1, h2, h3, h4, h5, h6 {

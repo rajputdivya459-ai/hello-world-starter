@@ -20,6 +20,11 @@ import GalleryPage from "./pages/GalleryPage";
 import MemberProfilePage from "./pages/MemberProfilePage";
 import PublicPlansPage from "./pages/PublicPlansPage";
 import PublicBranchesPage from "./pages/PublicBranchesPage";
+import PublicServicesPage from "./pages/PublicServicesPage";
+import PublicTrainersPage from "./pages/PublicTrainersPage";
+import PublicEquipmentPage from "./pages/PublicEquipmentPage";
+import PublicTestimonialsPage from "./pages/PublicTestimonialsPage";
+import PublicProductsPage from "./pages/PublicProductsPage";
 
 const queryClient = new QueryClient();
 
@@ -55,6 +60,11 @@ const App = () => (
           <Route path="/gallery" element={<GalleryPage />} />
           <Route path="/plans" element={<PublicPlansPage />} />
           <Route path="/branches" element={<PublicBranchesPage />} />
+          <Route path="/services" element={<PublicServicesPage />} />
+          <Route path="/trainers" element={<PublicTrainersPage />} />
+          <Route path="/equipment" element={<PublicEquipmentPage />} />
+          <Route path="/testimonials" element={<PublicTestimonialsPage />} />
+          <Route path="/products" element={<PublicProductsPage />} />
           <Route path="/app/*" element={<AppLayout />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

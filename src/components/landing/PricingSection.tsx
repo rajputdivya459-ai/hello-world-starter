@@ -25,6 +25,7 @@ interface PricingSectionProps {
   plans: Plan[];
   content: PricingContent;
   onCtaClick: () => void;
+  showViewAll?: boolean;
 }
 
 function PlanCard({ plan, index, isPopular, onCtaClick }: { plan: Plan; index: number; isPopular: boolean; onCtaClick: () => void }) {
@@ -101,7 +102,7 @@ function PlanCard({ plan, index, isPopular, onCtaClick }: { plan: Plan; index: n
   );
 }
 
-export function PricingSection({ plans, content, onCtaClick }: PricingSectionProps) {
+export function PricingSection({ plans, content, onCtaClick, showViewAll }: PricingSectionProps) {
   const highlightedPlan = plans.find(p => p.is_highlighted);
 
   return (
@@ -120,15 +121,15 @@ export function PricingSection({ plans, content, onCtaClick }: PricingSectionPro
         )}
 
         <div className={`grid grid-cols-1 sm:grid-cols-2 ${plans.length >= 3 ? 'lg:grid-cols-3' : ''} gap-6 max-w-5xl mx-auto`}>
-          {plans.slice(0, 6).map((plan, i) => {
-            const isPopular = highlightedPlan ? plan.id === highlightedPlan.id : i === Math.floor((Math.min(plans.length, 6) - 1) / 2);
+          {plans.map((plan, i) => {
+            const isPopular = highlightedPlan ? plan.id === highlightedPlan.id : i === Math.floor((plans.length - 1) / 2);
             return (
               <PlanCard key={plan.id} plan={plan} index={i} isPopular={isPopular} onCtaClick={onCtaClick} />
             );
           })}
         </div>
 
-        {plans.length > 6 && (
+        {showViewAll && (
           <div className="text-center mt-12">
             <Link to="/plans">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.97 }}>
