@@ -74,6 +74,16 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
     // Expose highlight for gradient usage
     root.style.setProperty('--highlight', resolved.highlight_color);
 
+    // ── Detect light vs dark theme based on primary bg lightness ──
+    // resolved.primary_color is an HSL triple like "220 25% 6%"
+    const lightnessStr = resolved.primary_color.split(' ')[2] ?? '0%';
+    const lightness = parseFloat(lightnessStr);
+    if (Number.isFinite(lightness) && lightness > 60) {
+      root.setAttribute('data-theme-mode', 'light');
+    } else {
+      root.setAttribute('data-theme-mode', 'dark');
+    }
+
     // Derive all website shades from primary/secondary
     const shades = deriveShades(resolved.primary_color, resolved.secondary_color);
     if (shades) {
