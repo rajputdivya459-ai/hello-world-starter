@@ -286,53 +286,67 @@ if (!resolved.button_color) {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Custom Colors (HSL)</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              {[
-                { label: 'Background (Primary)', value: primaryColor, set: setPrimaryColor },
-                { label: 'Background (Secondary)', value: secondaryColor, set: setSecondaryColor },
-                { label: 'Accent Color', value: accentColor, set: setAccentColor },
-                { label: 'Highlight Color', value: highlightColor, set: setHighlightColor },
-                { label: 'Card Background (optional)', value: cardColor, set: setCardColor },
-                { label: 'Heading Color (optional)', value: headingColor, set: setHeadingColor },
-                { label: 'Description Color (optional)', value: descriptionColor, set: setDescriptionColor },
-                { label: 'Button Color (optional)', value: buttonColor, set: setButtonColor },
-              ].map(c => (
-                <div key={c.label} className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-lg border border-border shrink-0" style={{ background: c.value ? hslToCss(c.value) : 'transparent' }} />
-                  {/* <div className="flex-1">
-                    <Label className="text-xs">{c.label}</Label>
-                    <Input value={c.value} onChange={e => { c.set(e.target.value);
-                       setActivePreset(null); }} className="h-8 text-xs" placeholder="142 71% 45%" />
-                    
-                  </div> */}
-                  <div className="flex gap-2">
-                    <input
-                        type="color"
-                        value={c.value ? hslToHex(c.value) : "#111827"}
-                        onChange={(e) => {
-                            c.set(hexToHsl(e.target.value));
-                            setActivePreset(null);
-                        }}
-                        className="h-8 w-10 p-0 border rounded"
-                    />
+  <CardHeader>
+    <CardTitle>Custom Colors (HSL)</CardTitle>
+  </CardHeader>
 
-                    <Input
-                        value={c.value}
-                        onChange={(e) => {
-                            c.set(e.target.value);
-                            setActivePreset(null);
-                        }}
-                        className="h-8 text-xs"
-                    />
-                </div>
-                </div>
-              ))}
-              <p className="text-xs text-muted-foreground">
-                Optional fields override their derived defaults. Leave blank to auto-derive from Primary/Accent.
-              </p>
-            </CardContent>
-          </Card>
+  <CardContent className="space-y-4">
+    {[
+      { label: 'Background (Primary)', value: primaryColor, set: setPrimaryColor },
+      { label: 'Background (Secondary)', value: secondaryColor, set: setSecondaryColor },
+      { label: 'Accent Color', value: accentColor, set: setAccentColor },
+      { label: 'Highlight Color', value: highlightColor, set: setHighlightColor },
+      { label: 'Card Background', value: cardColor, set: setCardColor },
+      { label: 'Heading Text Color', value: headingColor, set: setHeadingColor },
+      { label: 'Description Text Color', value: descriptionColor, set: setDescriptionColor },
+      { label: 'Button Color', value: buttonColor, set: setButtonColor },
+    ].map((c) => (
+      <div key={c.label} className="space-y-1">
+        
+        {/* ✅ LABEL */}
+        <Label className="text-xs">{c.label}</Label>
+
+        <div className="flex items-center gap-3">
+          
+          {/* Color preview box */}
+          <div
+            className="h-8 w-8 rounded-lg border border-border shrink-0"
+            style={{
+              background: c.value ? hslToCss(c.value) : 'transparent',
+            }}
+          />
+
+          {/* Picker + Input */}
+          <div className="flex gap-2 flex-1">
+            <input
+              type="color"
+              value={c.value ? hslToHex(c.value) : "#111827"}
+              onChange={(e) => {
+                c.set(hexToHsl(e.target.value));
+                setActivePreset(null);
+              }}
+              className="h-8 w-10 p-0 border rounded"
+            />
+
+            <Input
+              value={c.value}
+              onChange={(e) => {
+                c.set(e.target.value);
+                setActivePreset(null);
+              }}
+              className="h-8 text-xs"
+              placeholder="e.g. 142 71% 45%"
+            />
+          </div>
+        </div>
+      </div>
+    ))}
+
+    <p className="text-xs text-muted-foreground">
+      Use color picker or adjust HSL manually. Leave optional fields empty to auto-derive from Primary/Accent.
+    </p>
+  </CardContent>
+</Card>
 
           <Button onClick={handleSave} disabled={upsertSettings.isPending} className="w-full">
             <Save className="h-4 w-4 mr-2" />{upsertSettings.isPending ? 'Saving...' : 'Save Branding'}
