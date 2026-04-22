@@ -44,7 +44,8 @@ export function FooterSocial({ content }: Props) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: i * 0.1, ease: [0.22, 1, 0.36, 1] }}
             whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}
-            className="h-10 w-10 rounded-full bg-secondary/50 flex items-center justify-center text-green-100 bg-green-500  transition-colors duration-300"
+            className="h-10 w-10 rounded-full flex items-center justify-center transition-colors duration-300 hover:[background:var(--button-hover)]"
+            style={{ background: 'var(--button-bg)', color: 'var(--button-text)' }}
           >
             <Icon />
           </motion.a>
