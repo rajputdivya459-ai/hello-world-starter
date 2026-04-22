@@ -192,3 +192,54 @@
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.05); }
 }
+
+/* ── #theme-root wrapper override ──
+   Forces every section, card, heading, paragraph and button inside the
+   public landing page to follow the theme variables set by BrandingProvider,
+   without having to touch individual components. */
+#theme-root {
+  background: var(--bg-gradient);
+  color: var(--text-heading);
+  min-height: 100vh;
+}
+
+/* Sections inherit the root gradient */
+#theme-root section {
+  background-color: transparent;
+}
+
+/* Cards */
+#theme-root .card,
+#theme-root [class*="bg-ws-card"],
+#theme-root [class*="bg-card"] {
+  background: var(--card-bg) !important;
+  border-color: var(--card-border) !important;
+}
+
+/* Headings */
+#theme-root h1,
+#theme-root h2,
+#theme-root h3,
+#theme-root h4,
+#theme-root h5,
+#theme-root h6 {
+  color: var(--text-heading) !important;
+}
+
+/* Descriptions */
+#theme-root p:not([data-theme-skip]) {
+  color: var(--text-description);
+}
+
+/* Primary buttons */
+#theme-root button.bg-primary,
+#theme-root .btn-primary {
+  background: var(--button-bg) !important;
+  color: var(--button-text) !important;
+}
+
+#theme-root button.bg-primary:hover,
+#theme-root .btn-primary:hover {
+  background: var(--button-hover) !important;
+}
+

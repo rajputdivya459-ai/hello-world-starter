@@ -224,8 +224,13 @@ export default function LandingPage() {
 
   return (
     <div
-      className="min-h-screen text-ws-text overflow-x-hidden scroll-smooth"
-      style={{ background: 'var(--bg-gradient)' }}
+      id="theme-root"
+      className="min-h-screen overflow-x-hidden scroll-smooth"
+      style={{
+        background: 'var(--bg-gradient)',
+        color: 'var(--text-heading)',
+        minHeight: '100vh',
+      }}
     >
       <PageLoader
         brandName={brandName}
