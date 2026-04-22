@@ -120,6 +120,27 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
       root.style.setProperty('--accent', buttonOverride);
     }
 
+    // ── Alias tokens (--bg-primary, --card-bg, --button-bg ...) ──
+    // Always recompute from the *currently* resolved tokens so any change
+    // flows through to components that use these aliases directly.
+    const finalCard = cardOverride ?? `${resolved.primary_color.split(' ')[0]} ${Math.min(parseInt(resolved.primary_color.split(' ')[1]) || 25, 25)}% 7%`;
+    const finalHeading = headingOverride ?? '220 10% 92%';
+    const finalDesc = descOverride ?? '220 10% 55%';
+    const accentForBtn = buttonOverride ?? resolved.accent_color;
+
+    root.style.setProperty('--bg-primary', `hsl(${resolved.primary_color})`);
+    root.style.setProperty('--bg-secondary', `hsl(${resolved.secondary_color})`);
+    root.style.setProperty('--card-bg', `hsl(${finalCard})`);
+    root.style.setProperty('--card-border', `hsl(${resolved.primary_color.split(' ')[0]} 20% 18%)`);
+    root.style.setProperty('--color-accent', `hsl(${resolved.accent_color})`);
+    root.style.setProperty('--button-bg', `hsl(${accentForBtn})`);
+    root.style.setProperty('--button-hover', `hsl(${resolved.highlight_color})`);
+    root.style.setProperty('--button-text', '#FFFFFF');
+    root.style.setProperty('--text-heading', `hsl(${finalHeading})`);
+    root.style.setProperty('--text-description', `hsl(${finalDesc})`);
+    root.style.setProperty('--navbar-bg', `hsl(${resolved.primary_color})`);
+    root.style.setProperty('--footer-bg', `hsl(${resolved.secondary_color})`);
+
     return () => {
       ['--primary', '--ring', '--sidebar-primary', '--sidebar-ring', '--chart-1', '--accent', '--highlight',
        '--website-bg', '--website-bg-secondary',
@@ -127,6 +148,9 @@ export function BrandingProvider({ children }: { children: React.ReactNode }) {
        '--ws-social-proof', '--ws-input',
        '--bg-gradient', '--card', '--foreground', '--card-foreground',
        '--ws-text', '--muted-foreground', '--ws-text-muted', '--ws-text-label',
+       '--bg-primary', '--bg-secondary', '--card-bg', '--card-border', '--color-accent',
+       '--button-bg', '--button-hover', '--button-text', '--text-heading', '--text-description',
+       '--navbar-bg', '--footer-bg',
       ].forEach(v => root.style.removeProperty(v));
     };
   }, [resolved, isLoading]);
