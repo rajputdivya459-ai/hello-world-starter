@@ -115,6 +115,16 @@ export default function LandingPage() {
   const [leadGoal, setLeadGoal] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // Apply public theme class so the gradient binds to html/body/#root
+  useEffect(() => {
+    document.documentElement.classList.add('theme-public');
+    document.body.classList.add('theme-public');
+    return () => {
+      document.documentElement.classList.remove('theme-public');
+      document.body.classList.remove('theme-public');
+    };
+  }, []);
+
   const { data, isLoading } = useQuery({
     queryKey: ['public-landing'],
     queryFn: async () => {
