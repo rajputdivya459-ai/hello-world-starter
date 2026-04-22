@@ -372,12 +372,24 @@ export default function LandingPage() {
 
       {/* ─── STATS / SOCIAL PROOF ─── */}
    {statsEnabled && (statsContent.items?.length ?? 0) > 0 && (
-  <section className="relative -mt-1 overflow-hidden border-y border-blue-900/40 bg-gradient-to-br from-[#0b1220] via-[#0f1b2e] to-[#0a1626]">
+  <section
+    className="relative -mt-1 overflow-hidden border-y"
+    style={{
+      background: 'var(--bg-secondary)',
+      borderColor: 'var(--card-border)',
+    }}
+  >
 
-    {/* soft glow background */}
-    <div className="absolute inset-0 pointer-events-none">
-      <div className="absolute top-0 left-1/3 w-80 h-80 bg-blue-500/20 blur-3xl rounded-full" />
-      <div className="absolute bottom-0 right-1/3 w-80 h-80 bg-cyan-400/20 blur-3xl rounded-full" />
+    {/* soft accent glow background (uses theme accent) */}
+    <div className="absolute inset-0 pointer-events-none opacity-60">
+      <div
+        className="absolute top-0 left-1/3 w-80 h-80 blur-3xl rounded-full"
+        style={{ background: 'hsl(var(--accent) / 0.18)' }}
+      />
+      <div
+        className="absolute bottom-0 right-1/3 w-80 h-80 blur-3xl rounded-full"
+        style={{ background: 'hsl(var(--highlight) / 0.18)' }}
+      />
     </div>
 
     <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20">
@@ -390,14 +402,30 @@ export default function LandingPage() {
             viewport={{ once: true, margin: '-40px' }}
             transition={{ duration: 0.6, delay: i * 0.1 }}
             whileHover={{ y: -6 }}
-            className="group relative text-center rounded-2xl bg-[#0f1b2e]/80 backdrop-blur-xl border border-blue-900/40 p-6 md:p-8 shadow-md hover:shadow-2xl transition-all duration-500"
+            className="group relative text-center rounded-2xl backdrop-blur-xl border p-6 md:p-8 shadow-md hover:shadow-2xl transition-all duration-500"
+            style={{
+              background: 'var(--card-bg)',
+              borderColor: 'var(--card-border)',
+            }}
           >
 
-            {/* glow hover border */}
-            <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 bg-gradient-to-r from-blue-500/20 via-cyan-400/20 to-green-400/20 blur-xl" />
+            {/* glow hover border (theme accent) */}
+            <div
+              className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500 blur-xl"
+              style={{
+                background:
+                  'linear-gradient(to right, hsl(var(--accent) / 0.20), hsl(var(--highlight) / 0.20))',
+              }}
+            />
 
             {/* ICON */}
-            <div className="relative inline-flex items-center justify-center h-14 w-14 rounded-xl bg-gradient-to-br from-blue-500/20 to-cyan-400/20 mx-auto mb-4 shadow-inner group-hover:scale-110 transition">
+            <div
+              className="relative inline-flex items-center justify-center h-14 w-14 rounded-xl mx-auto mb-4 shadow-inner group-hover:scale-110 transition"
+              style={{
+                background:
+                  'linear-gradient(135deg, hsl(var(--accent) / 0.18), hsl(var(--highlight) / 0.18))',
+              }}
+            >
               {stat.icon_url ? (
                 <img
                   src={stat.icon_url}
@@ -408,26 +436,32 @@ export default function LandingPage() {
               ) : (
                 (() => {
                   const label = stat.label.toLowerCase();
-                  if (label.includes('member'))
-                    return <Users className="h-6 w-6 text-blue-400 group-hover:text-cyan-300 transition" />;
-                  if (label.includes('transform'))
-                    return <Award className="h-6 w-6 text-blue-400 group-hover:text-cyan-300 transition" />;
+                  const cls = 'h-6 w-6 transition';
+                  const style = { color: 'hsl(var(--accent))' } as React.CSSProperties;
+                  if (label.includes('member')) return <Users className={cls} style={style} />;
+                  if (label.includes('transform')) return <Award className={cls} style={style} />;
                   if (label.includes('experience') || label.includes('year'))
-                    return <Calendar className="h-6 w-6 text-blue-400 group-hover:text-cyan-300 transition" />;
+                    return <Calendar className={cls} style={style} />;
                   if (label.includes('rating') || label.includes('star'))
-                    return <Star className="h-6 w-6 text-blue-400 fill-blue-400 group-hover:text-cyan-300 group-hover:fill-cyan-300 transition" />;
-                  return <Award className="h-6 w-6 text-blue-400 group-hover:text-cyan-300 transition" />;
+                    return <Star className={cls} style={{ ...style, fill: 'hsl(var(--accent))' }} />;
+                  return <Award className={cls} style={style} />;
                 })()
               )}
             </div>
 
-            {/* VALUE */}
-            <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-300 to-green-300 bg-clip-text text-transparent">
+            {/* VALUE — uses accent color for emphasis */}
+            <p
+              className="text-3xl sm:text-4xl font-bold"
+              style={{ color: 'hsl(var(--accent))' }}
+            >
               {stat.value}
             </p>
 
-            {/* LABEL */}
-            <p className="text-xs sm:text-sm text-blue-200/70 font-medium uppercase tracking-wider mt-2 group-hover:text-blue-100 transition">
+            {/* LABEL — themed description color */}
+            <p
+              className="text-xs sm:text-sm font-medium uppercase tracking-wider mt-2"
+              style={{ color: 'var(--text-description)' }}
+            >
               {stat.label}
             </p>
 

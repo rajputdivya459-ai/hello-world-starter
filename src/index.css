@@ -208,12 +208,15 @@
   background-color: transparent;
 }
 
-/* Cards */
+/* Cards — always visually separated from the section background.
+   color-mix lifts the card a touch above the section so they never
+   collide visually, even when admin sets card == bg. */
 #theme-root .card,
 #theme-root [class*="bg-ws-card"],
 #theme-root [class*="bg-card"] {
-  background: var(--card-bg) !important;
-  border-color: var(--card-border) !important;
+  background: color-mix(in srgb, var(--card-bg) 92%, white 8%) !important;
+  border: 1px solid var(--card-border) !important;
+  box-shadow: 0 1px 2px hsl(0 0% 0% / 0.04), 0 4px 16px hsl(0 0% 0% / 0.06);
 }
 
 /* Headings */
@@ -241,5 +244,22 @@
 #theme-root button.bg-primary:hover,
 #theme-root .btn-primary:hover {
   background: var(--button-hover) !important;
+}
+
+/* ── Light-section guard ──
+   When BrandingProvider detects a light theme it sets [data-theme-mode="light"]
+   on <html>. Flip text tokens so no white-on-white can ever occur. */
+html[data-theme-mode="light"] {
+  --text-heading: hsl(220 25% 12%);
+  --text-description: hsl(220 15% 35%);
+  --button-text: #ffffff;
+}
+
+/* Inside #theme-root, force any leftover `text-white` / `text-white/70` etc.
+   utilities to fall back to the contrast-safe heading token so user content
+   stays readable on light themes. */
+html[data-theme-mode="light"] #theme-root .text-white,
+html[data-theme-mode="light"] #theme-root [class*="text-white/"] {
+  color: var(--text-heading) !important;
 }
 
