@@ -163,12 +163,18 @@ export function createSeedData(): MockDb {
     let expiryDate: Date;
 
     if (i < 15) {
-      startDate = subDays(now, Math.floor(Math.random() * 60) + 5);
-      expiryDate = addDays(now, Math.floor(Math.random() * 120) + 10);
+      // Recent / active: spread joins across last 9 months for richer monthly/yearly trends
+      const monthsBack = i % 9;
+      const baseDate = subMonths(now, monthsBack);
+      const dayOffset = Math.floor(Math.random() * 25);
+      startDate = subDays(baseDate, dayOffset);
+      expiryDate = addDays(startDate, plan.duration_days + Math.floor(Math.random() * 60));
     } else if (i < 20) {
+      // Expiring soon
       startDate = subDays(now, plan.duration_days - 3);
       expiryDate = addDays(now, Math.floor(Math.random() * 6) + 1);
     } else {
+      // Expired (churned)
       startDate = subDays(now, plan.duration_days + Math.floor(Math.random() * 30) + 10);
       expiryDate = subDays(now, Math.floor(Math.random() * 20) + 1);
     }
