@@ -180,43 +180,88 @@ export function createSeedData(): MockDb {
     };
   });
 
-  // Payments
-  const statuses = ['paid', 'paid', 'paid', 'pending', 'overdue'];
+  // Payments — current cycle for each member + history across last 11 months
+  const statuses = ['paid', 'paid', 'paid', 'paid', 'pending', 'overdue'];
   const methods = ['cash', 'upi', 'card', 'bank_transfer'];
-  const payments: PaymentRow[] = members.flatMap((m, i) => {
+  const payments: PaymentRow[] = [];
+  members.forEach((m, i) => {
     const plan = plans.find(p => p.id === m.plan_id)!;
-    const entries: PaymentRow[] = [{
+    // Current cycle payment
+    payments.push({
       id: genId(), user_id: DEMO_USER_ID, member_id: m.id, amount: plan.price,
       payment_date: m.start_date, method: methods[i % methods.length],
       status: statuses[i % statuses.length], note: null, created_at: m.created_at,
-    }];
-    if (i < 8) {
-      entries.push({
-        id: genId(), user_id: DEMO_USER_ID, member_id: m.id, amount: plan.price,
-        payment_date: format(subDays(now, 15), 'yyyy-MM-dd'), method: 'upi',
-        status: 'paid', note: 'Membership renewal', created_at: subDays(now, 15).toISOString(),
-      });
-    }
-    return entries;
+    });
   });
 
-  // Expenses
-  const expenseData = [
+  // Historical paid renewals across the last 11 months for richer analytics
+  for (let monthsBack = 1; monthsBack <= 11; monthsBack++) {
+    const monthDate = subMonths(now, monthsBack);
+    // 6-12 payments per past month, varying members
+    const count = 6 + Math.floor(Math.random() * 7);
+    for (let k = 0; k < count; k++) {
+      const m = members[(monthsBack * 3 + k) % members.length];
+      const plan = plans.find(p => p.id === m.plan_id)!;
+      const day = 1 + Math.floor(Math.random() * 27);
+      const pDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+      payments.push({
+        id: genId(), user_id: DEMO_USER_ID, member_id: m.id, amount: plan.price,
+        payment_date: format(pDate, 'yyyy-MM-dd'), method: methods[k % methods.length],
+        status: 'paid', note: 'Historical renewal', created_at: pDate.toISOString(),
+      });
+    }
+  }
+
+  // Today payment so Today tab is non-empty
+  if (members.length > 0) {
+    const m0 = members[0];
+    const plan0 = plans.find(p => p.id === m0.plan_id)!;
+    payments.push({
+      id: genId(), user_id: DEMO_USER_ID, member_id: m0.id, amount: plan0.price,
+      payment_date: today, method: 'upi', status: 'paid',
+      note: "Today's collection", created_at: nowIso,
+    });
+  }
+
+  // Expenses — recurring monthly expenses across last 12 months + this-month items
+  const recurringExpenses = [
     { title: 'Monthly Rent', amount: 45000, category: 'Rent' },
     { title: 'Electricity Bill', amount: 12000, category: 'Utilities' },
     { title: 'Staff Salary - Trainer 1', amount: 25000, category: 'Salary' },
     { title: 'Staff Salary - Trainer 2', amount: 22000, category: 'Salary' },
     { title: 'Staff Salary - Reception', amount: 15000, category: 'Salary' },
+    { title: 'Water Supply', amount: 3000, category: 'Utilities' },
+  ];
+  const adhocExpenses = [
     { title: 'Equipment Maintenance', amount: 8000, category: 'Equipment' },
     { title: 'Protein Supplements Stock', amount: 15000, category: 'Inventory' },
     { title: 'Marketing - Social Media', amount: 5000, category: 'Marketing' },
-    { title: 'Water Supply', amount: 3000, category: 'Utilities' },
     { title: 'New Dumbbells Set', amount: 18000, category: 'Equipment' },
   ];
-  const expenses: ExpenseRow[] = expenseData.map((e, i) => ({
-    id: genId(), user_id: DEMO_USER_ID, title: e.title, amount: e.amount,
-    expense_date: format(subDays(now, i * 3), 'yyyy-MM-dd'), category: e.category, created_at: nowIso,
-  }));
+  const expenses: ExpenseRow[] = [];
+  for (let monthsBack = 0; monthsBack <= 11; monthsBack++) {
+    const monthDate = subMonths(now, monthsBack);
+    recurringExpenses.forEach((e, idx) => {
+      const day = Math.min(1 + idx * 4, 27);
+      const eDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+      // Skip future dates if monthsBack === 0 and day > today
+      if (eDate > now) return;
+      expenses.push({
+        id: genId(), user_id: DEMO_USER_ID, title: e.title, amount: e.amount,
+        expense_date: format(eDate, 'yyyy-MM-dd'), category: e.category,
+        created_at: eDate.toISOString(),
+      });
+    });
+  }
+  // Recent ad-hoc expenses (this month)
+  adhocExpenses.forEach((e, i) => {
+    const eDate = subDays(now, i * 3 + 1);
+    expenses.push({
+      id: genId(), user_id: DEMO_USER_ID, title: e.title, amount: e.amount,
+      expense_date: format(eDate, 'yyyy-MM-dd'), category: e.category,
+      created_at: eDate.toISOString(),
+    });
+  });
 
   // Leads
   const leadData = [
