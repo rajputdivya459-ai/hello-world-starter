@@ -158,6 +158,8 @@ export function createSeedData(): MockDb {
     'Riya Malhotra', 'Manish Tiwari', 'Kavita Das', 'Nikhil Bhat', 'Anita Saxena',
     'Deepak Soni', 'Swati Pandey', 'Amit Jha', 'Ishita Banerjee', 'Rajesh Yadav',
     'Tanvi Mishra', 'Suresh Kulkarni', 'Pallavi Deshmukh',
+    'Harshad Pawar', 'Lavanya Krishnan', 'Mohit Bansal', 'Nandini Pillai', 'Omkar Jadhav',
+    'Preeti Chawla', 'Sanjay Trivedi',
   ];
 
   const members: MemberRow[] = indianNames.map((name, i) => {
