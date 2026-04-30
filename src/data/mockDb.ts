@@ -314,6 +314,13 @@ export function createSeedData(): MockDb {
     { name: 'Aditi Sharma', phone: '+91 9876543225', goal: 'General Fitness', status: 'new' },
     { name: 'Gaurav Saxena', phone: '+91 9876543226', goal: 'Strength Training', status: 'new' },
     { name: 'Bhavna Puri', phone: '+91 9876543227', goal: 'Weight Loss', status: 'contacted' },
+    { name: 'Aniket Wagh', phone: '+91 9876543228', goal: 'Muscle Gain', status: 'new' },
+    { name: 'Charul Saini', phone: '+91 9876543229', goal: 'Yoga', status: 'contacted' },
+    { name: 'Devansh Rana', phone: '+91 9876543230', goal: 'Strength Training', status: 'visit_scheduled' },
+    { name: 'Esha Bhardwaj', phone: '+91 9876543231', goal: 'Weight Loss', status: 'joined' },
+    { name: 'Farhan Qureshi', phone: '+91 9876543232', goal: 'General Fitness', status: 'lost' },
+    { name: 'Gitanjali Roy', phone: '+91 9876543233', goal: 'Yoga', status: 'contacted' },
+    { name: 'Hardik Vyas', phone: '+91 9876543234', goal: 'Muscle Gain', status: 'joined' },
   ];
   const leads: LeadRow[] = leadData.map((l, i) => ({
     id: genId(), user_id: DEMO_USER_ID, name: l.name, phone: l.phone,
