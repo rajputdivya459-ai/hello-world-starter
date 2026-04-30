@@ -224,6 +224,25 @@ export function createSeedData(): MockDb {
     }
   }
 
+  // Per-member renewal history — guarantee 2-5 payments per member, spread across last 6 months
+  members.forEach((m, i) => {
+    const plan = plans.find(p => p.id === m.plan_id)!;
+    const extraCount = 1 + (i % 4); // 1..4 extra → totals 2..5 incl. current cycle
+    for (let k = 0; k < extraCount; k++) {
+      const monthsBack = 1 + ((i + k * 2) % 6);
+      const monthDate = subMonths(now, monthsBack);
+      const day = 3 + ((i * 7 + k * 11) % 25);
+      const pDate = new Date(monthDate.getFullYear(), monthDate.getMonth(), day);
+      const pickStatus = (i + k) % 10 < 7 ? 'paid' : (i + k) % 10 < 9 ? 'pending' : 'overdue';
+      payments.push({
+        id: genId(), user_id: DEMO_USER_ID, member_id: m.id, amount: plan.price,
+        payment_date: format(pDate, 'yyyy-MM-dd'), method: methods[(i + k) % methods.length],
+        status: pickStatus, note: pickStatus === 'overdue' ? 'Renewal overdue' : 'Member renewal',
+        created_at: pDate.toISOString(),
+      });
+    }
+  });
+
   // Today payment so Today tab is non-empty
   if (members.length > 0) {
     const m0 = members[0];
