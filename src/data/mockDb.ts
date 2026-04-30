@@ -325,7 +325,7 @@ export function createSeedData(): MockDb {
   const leads: LeadRow[] = leadData.map((l, i) => ({
     id: genId(), user_id: DEMO_USER_ID, name: l.name, phone: l.phone,
     fitness_goal: l.goal, status: l.status,
-    created_at: subDays(now, Math.floor(Math.random() * 30)).toISOString(),
+    created_at: subDays(now, Math.floor(Math.random() * 180)).toISOString(),
     updated_at: nowIso,
   }));
 
