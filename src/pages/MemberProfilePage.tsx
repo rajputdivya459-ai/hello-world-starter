@@ -2,24 +2,21 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMembers } from '@/hooks/useMembers';
 import { usePayments } from '@/hooks/usePayments';
 import { usePlans } from '@/hooks/usePlans';
-import { useRenewMembership } from '@/hooks/useRenewMembership';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell } from 'lucide-react';
+import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell, Download, FileText } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
 import { useState } from 'react';
+import { generateInvoicePdf } from '@/utils/generateInvoicePdf';
+import { getInvoiceSettings } from '@/hooks/useInvoiceSettings';
+import { AddPaymentDialog } from '@/components/AddPaymentDialog';
+import { ReminderDialog, whatsappDirect } from '@/components/ReminderDialog';
 
-function getWhatsAppUrl(phone: string, name: string) {
-  const cleanPhone = phone.replace(/[^0-9]/g, '');
-  const fullPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
-  const message = encodeURIComponent(`Hi ${name}, this is regarding your gym membership.`);
-  return `https://wa.me/${fullPhone}?text=${message}`;
-}
 
 export default function MemberProfilePage() {
   const { memberId } = useParams<{ memberId: string }>();
@@ -28,6 +25,8 @@ export default function MemberProfilePage() {
   const { data: payments, isLoading: paymentsLoading } = usePayments();
   const { data: plans } = usePlans();
   const [renewOpen, setRenewOpen] = useState(false);
+  const [paymentOpen, setPaymentOpen] = useState(false);
+  const [reminderOpen, setReminderOpen] = useState(false);
   const { toast } = useToast();
 
   const member = members?.find(m => m.id === memberId);
@@ -92,19 +91,19 @@ export default function MemberProfilePage() {
           <Button variant="outline" onClick={() => setRenewOpen(true)}>
             <RefreshCw className="h-4 w-4 mr-2" /> Renew
           </Button>
-          <Button variant="outline" onClick={() => navigate('/app/payments')}>
+          <Button variant="outline" onClick={() => setPaymentOpen(true)}>
             <CreditCard className="h-4 w-4 mr-2" /> Add Payment
           </Button>
           <Button variant="outline" className="text-green-600 border-green-200 hover:bg-green-50" asChild>
-            <a href={getWhatsAppUrl(member.phone, member.name)} target="_blank" rel="noopener noreferrer">
+            <a href={whatsappDirect(member.phone)} target="_blank" rel="noopener noreferrer">
               <MessageCircle className="h-4 w-4 mr-2" /> WhatsApp
             </a>
           </Button>
-          {(isExpired || isExpiring) && (
+          {(isExpired || isExpiring || paymentStatus !== 'paid') && (
             <Button
               variant="outline"
               className="border-yellow-300 text-yellow-600 hover:bg-yellow-50"
-              onClick={() => toast({ title: '📩 Reminder', description: `Reminder feature for ${member.name} coming soon!` })}
+              onClick={() => setReminderOpen(true)}
             >
               <Bell className="h-4 w-4 mr-2" /> Send Reminder
             </Button>
@@ -190,6 +189,7 @@ export default function MemberProfilePage() {
                   <TableHead>Method</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Note</TableHead>
+                  <TableHead className="text-right">Invoice</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -202,6 +202,21 @@ export default function MemberProfilePage() {
                       <Badge variant={p.status === 'paid' ? 'default' : 'secondary'}>{p.status}</Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground text-sm">{p.note ?? '—'}</TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => generateInvoicePdf({
+                          member,
+                          payment: p,
+                          totalPaid,
+                          planAmount: Number(p.amount),
+                          settings: getInvoiceSettings(),
+                        })}
+                      >
+                        <Download className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
@@ -214,6 +229,37 @@ export default function MemberProfilePage() {
         </CardContent>
       </Card>
 
+      {/* Download Invoice Section */}
+      <Card>
+        <CardContent className="p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
+              <FileText className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <p className="font-medium text-sm">Generate Invoice PDF</p>
+              <p className="text-xs text-muted-foreground">
+                Downloads an invoice for the latest payment. Customize template in Settings → Invoice Template.
+              </p>
+            </div>
+          </div>
+          <Button
+            onClick={() => {
+              const latest = memberPayments[0];
+              generateInvoicePdf({
+                member,
+                payment: latest ?? null,
+                totalPaid,
+                planAmount: latest ? Number(latest.amount) : 0,
+                settings: getInvoiceSettings(),
+              });
+            }}
+          >
+            <Download className="h-4 w-4 mr-2" /> Download Invoice
+          </Button>
+        </CardContent>
+      </Card>
+
       {/* Renew Dialog */}
       {plans && (
         <RenewDialog
@@ -223,6 +269,25 @@ export default function MemberProfilePage() {
           plans={plans}
         />
       )}
+
+      {/* Add Payment Dialog */}
+      <AddPaymentDialog
+        open={paymentOpen}
+        onOpenChange={setPaymentOpen}
+        member={member}
+      />
+
+      {/* Reminder Dialog */}
+      <ReminderDialog
+        open={reminderOpen}
+        onOpenChange={setReminderOpen}
+        target={{
+          id: member.id,
+          name: member.name,
+          phone: member.phone,
+          due_date: member.expiry_date,
+        }}
+      />
     </div>
   );
 }

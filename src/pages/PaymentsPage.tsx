@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { usePayments, useCreatePayment, useDeletePayment, useUpdatePaymentStatus } from '@/hooks/usePayments';
+import { useState, useMemo } from 'react';
+import { usePayments, useCreatePayment, useDeletePayment, useUpdatePaymentStatus, type Payment } from '@/hooks/usePayments';
 import { useMembers } from '@/hooks/useMembers';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -8,12 +8,42 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationEllipsis,
+} from '@/components/ui/pagination';
 import { useToast } from '@/hooks/use-toast';
-import { Plus, Trash2, CheckCircle, CreditCard, AlertTriangle } from 'lucide-react';
-import { format } from 'date-fns';
+import { Plus, Trash2, CheckCircle, CreditCard, BarChart3 } from 'lucide-react';
+import { format, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { Link } from 'react-router-dom';
+
+const PAGE_SIZE = 15;
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+type TimeMode = 'all' | 'month' | 'year';
+
+type ConfirmAction =
+  | { type: 'mark-paid'; payment: Payment }
+  | { type: 'delete'; payment: Payment }
+  | null;
 
 const methods = [
   { value: 'cash', label: 'Cash' },
@@ -63,90 +93,226 @@ export default function PaymentsPage() {
     }
   };
 
-  const paidPayments = payments?.filter(p => p.status === 'paid') ?? [];
-  const pendingPayments = payments?.filter(p => p.status === 'pending') ?? [];
-  const overduePayments = payments?.filter(p => p.status === 'overdue') ?? [];
+  // Time filter
+  const today = new Date();
+  const [timeMode, setTimeMode] = useState<TimeMode>('all');
+  const [filterMonth, setFilterMonth] = useState<number>(today.getMonth());
+  const [filterYear, setFilterYear] = useState<number>(today.getFullYear());
 
-  const PaymentTable = ({ data, showMarkPaid }: { data: typeof payments; showMarkPaid?: boolean }) => (
-    data && data.length > 0 ? (
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Member</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Date</TableHead>
-            <TableHead>Method</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {data.map(p => (
-            <TableRow key={p.id}>
-              <TableCell className="font-medium">{p.members?.name ?? '—'}</TableCell>
-              <TableCell>₹{Number(p.amount).toLocaleString()}</TableCell>
-              <TableCell>{format(new Date(p.payment_date), 'dd MMM yyyy')}</TableCell>
-              <TableCell className="capitalize">{p.method.replace('_', ' ')}</TableCell>
-              <TableCell>
-                <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}
-                  className={cn(
-                    p.status === 'paid' && 'bg-emerald-500/10 text-emerald-600 border border-emerald-300',
-                    p.status === 'overdue' && '',
-                    p.status === 'pending' && 'border-orange-400 text-orange-500 bg-orange-500/10'
-                  )}>
-                  {p.status}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                {showMarkPaid && (p.status === 'pending' || p.status === 'overdue') && (
-                  <Button variant="ghost" size="icon" title="Mark as Paid" onClick={() => updateStatus.mutateAsync({ id: p.id, status: 'paid' })}>
-                    <CheckCircle className="h-4 w-4 text-primary" />
-                  </Button>
-                )}
-                <Button variant="ghost" size="icon" onClick={() => deletePayment.mutateAsync(p.id)}>
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    ) : (
-      <div className="flex flex-col items-center justify-center p-16 text-center">
-        <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-          <CreditCard className="h-8 w-8 text-primary" />
-        </div>
-        <h3 className="font-display font-semibold text-lg mb-1">No payments found</h3>
-        <p className="text-muted-foreground text-sm mb-6 max-w-xs">
-          Record your first payment to start tracking revenue.
-        </p>
-        <Button onClick={() => setDialogOpen(true)} disabled={!members || members.length === 0}>
-          <Plus className="h-4 w-4 mr-2" /> Record Your First Payment
-        </Button>
-        {(!members || members.length === 0) && (
-          <p className="text-xs text-muted-foreground mt-3">
-            First, <a href="/app/members" className="text-primary hover:underline">add a member</a> to get started.
+  const filteredPayments = useMemo(() => {
+    if (!payments) return [];
+    if (timeMode === 'all') return payments;
+    if (timeMode === 'month') {
+      const f = startOfMonth(new Date(filterYear, filterMonth, 1));
+      const t = endOfMonth(f);
+      return payments.filter(p => {
+        const d = new Date(p.payment_date);
+        return d >= f && d <= t;
+      });
+    }
+    const f = startOfYear(new Date(filterYear, 0, 1));
+    const t = endOfYear(f);
+    return payments.filter(p => {
+      const d = new Date(p.payment_date);
+      return d >= f && d <= t;
+    });
+  }, [payments, timeMode, filterMonth, filterYear]);
+
+  const paidPayments = filteredPayments.filter(p => p.status === 'paid');
+  const pendingPayments = filteredPayments.filter(p => p.status === 'pending');
+  const overduePayments = filteredPayments.filter(p => p.status === 'overdue');
+
+  const yearOptions = Array.from({ length: 6 }, (_, i) => today.getFullYear() - i);
+
+  const [confirmAction, setConfirmAction] = useState<ConfirmAction>(null);
+  const [pages, setPages] = useState<Record<string, number>>({ all: 1, pending: 1, overdue: 1, paid: 1 });
+
+  const setPage = (key: string, page: number) => setPages(p => ({ ...p, [key]: page }));
+
+  const handleConfirm = async () => {
+    if (!confirmAction) return;
+    try {
+      if (confirmAction.type === 'mark-paid') {
+        await updateStatus.mutateAsync({ id: confirmAction.payment.id, status: 'paid' });
+        toast({ title: 'Payment marked as paid' });
+      } else {
+        await deletePayment.mutateAsync(confirmAction.payment.id);
+        toast({ title: 'Payment deleted' });
+      }
+    } catch (error: any) {
+      toast({ title: 'Error', description: error.message, variant: 'destructive' });
+    } finally {
+      setConfirmAction(null);
+    }
+  };
+
+  const PaymentTable = ({ data, showMarkPaid, pageKey }: { data: typeof payments; showMarkPaid?: boolean; pageKey: string }) => {
+    const list = data ?? [];
+    const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+    const currentPage = Math.min(pages[pageKey] ?? 1, totalPages);
+    const pageData = useMemo(
+      () => list.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE),
+      [list, currentPage]
+    );
+
+    if (list.length === 0) {
+      return (
+        <div className="flex flex-col items-center justify-center p-16 text-center">
+          <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+            <CreditCard className="h-8 w-8 text-primary" />
+          </div>
+          <h3 className="font-display font-semibold text-lg mb-1">No payments found</h3>
+          <p className="text-muted-foreground text-sm mb-6 max-w-xs">
+            Record your first payment to start tracking revenue.
           </p>
-        )}
-      </div>
-    )
-  );
+          <Button onClick={() => setDialogOpen(true)} disabled={!members || members.length === 0}>
+            <Plus className="h-4 w-4 mr-2" /> Record Your First Payment
+          </Button>
+          {(!members || members.length === 0) && (
+            <p className="text-xs text-muted-foreground mt-3">
+              First, <a href="/app/members" className="text-primary hover:underline">add a member</a> to get started.
+            </p>
+          )}
+        </div>
+      );
+    }
 
-  const totalPendingAmount = [...(pendingPayments), ...(overduePayments)].reduce((sum, p) => sum + Number(p.amount), 0);
+    // Page number window (max 5 shown)
+    const pageNumbers: number[] = [];
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.min(totalPages, start + 4);
+    for (let i = start; i <= end; i++) pageNumbers.push(i);
+
+    return (
+      <>
+        <div className="responsive-card-table"><Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Member</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Method</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {pageData.map(p => (
+              <TableRow key={p.id}>
+                <TableCell data-label="Member" className="font-medium">{p.members?.name ?? '—'}</TableCell>
+                <TableCell data-label="Amount">₹{Number(p.amount).toLocaleString()}</TableCell>
+                <TableCell data-label="Date">{format(new Date(p.payment_date), 'dd MMM yyyy')}</TableCell>
+                <TableCell data-label="Method" className="capitalize">{p.method.replace('_', ' ')}</TableCell>
+                <TableCell data-label="Status">
+                  <Badge variant={p.status === 'paid' ? 'default' : p.status === 'overdue' ? 'destructive' : 'secondary'}
+                    className={cn(
+                      p.status === 'paid' && 'bg-emerald-500/10 text-emerald-600 border border-emerald-300',
+                      p.status === 'overdue' && '',
+                      p.status === 'pending' && 'border-orange-400 text-orange-500 bg-orange-500/10'
+                    )}>
+                    {p.status}
+                  </Badge>
+                </TableCell>
+                <TableCell data-label="Actions" className="text-right actions-cell">
+                  <div className="inline-flex items-center gap-1 justify-end">
+                  {showMarkPaid && (p.status === 'pending' || p.status === 'overdue') && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      title="Mark as Paid"
+                      onClick={() => setConfirmAction({ type: 'mark-paid', payment: p })}
+                    >
+                      <CheckCircle className="h-4 w-4 text-primary" />
+                    </Button>
+                  )}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    title="Delete Payment"
+                    onClick={() => setConfirmAction({ type: 'delete', payment: p })}
+                  >
+                    <Trash2 className="h-4 w-4 text-destructive" />
+                  </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table></div>
+
+        <div className="flex items-center justify-between px-4 py-3 border-t">
+          <p className="text-xs text-muted-foreground">
+            Showing {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, list.length)} of {list.length}
+          </p>
+          {totalPages > 1 && (
+            <Pagination className="m-0 w-auto justify-end">
+              <PaginationContent>
+                <PaginationItem>
+                  <PaginationPrevious
+                    href="#"
+                    aria-disabled={currentPage === 1}
+                    className={cn(currentPage === 1 && 'pointer-events-none opacity-50')}
+                    onClick={(e) => { e.preventDefault(); if (currentPage > 1) setPage(pageKey, currentPage - 1); }}
+                  />
+                </PaginationItem>
+                {start > 1 && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                {pageNumbers.map(n => (
+                  <PaginationItem key={n}>
+                    <PaginationLink
+                      href="#"
+                      isActive={n === currentPage}
+                      onClick={(e) => { e.preventDefault(); setPage(pageKey, n); }}
+                    >
+                      {n}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+                {end < totalPages && (
+                  <PaginationItem>
+                    <PaginationEllipsis />
+                  </PaginationItem>
+                )}
+                <PaginationItem>
+                  <PaginationNext
+                    href="#"
+                    aria-disabled={currentPage === totalPages}
+                    className={cn(currentPage === totalPages && 'pointer-events-none opacity-50')}
+                    onClick={(e) => { e.preventDefault(); if (currentPage < totalPages) setPage(pageKey, currentPage + 1); }}
+                  />
+                </PaginationItem>
+              </PaginationContent>
+            </Pagination>
+          )}
+        </div>
+      </>
+    );
+  };
+
+
 
   return (
-    <div className="space-y-6">
-        <div className="flex items-center justify-between">
+    <div className="space-y-6 max-w-full">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
             <h1 className="text-2xl font-bold font-display">Payments</h1>
             <p className="text-muted-foreground text-sm mt-1">Track all payment transactions</p>
           </div>
-          <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-            <DialogTrigger asChild>
-              <Button disabled={!members || members.length === 0}>
-                <Plus className="h-4 w-4 mr-2" />Add Payment
+          <div className="grid grid-cols-1 sm:flex sm:items-center gap-2">
+            <Link to="/app/payments/dashboard" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full sm:w-auto">
+                <BarChart3 className="h-4 w-4 mr-2" />Payments Dashboard
               </Button>
-            </DialogTrigger>
+            </Link>
+            <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+              <DialogTrigger asChild>
+                <Button className="w-full sm:w-auto" disabled={!members || members.length === 0}>
+                  <Plus className="h-4 w-4 mr-2" />Add Payment
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Record Payment</DialogTitle></DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -202,50 +368,45 @@ export default function PaymentsPage() {
               </form>
             </DialogContent>
           </Dialog>
+          </div>
         </div>
 
-        {/* Summary Cards */}
-        {(pendingPayments.length > 0 || overduePayments.length > 0) && (
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-orange-500/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-orange-500" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{pendingPayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Pending</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center">
-                  <AlertTriangle className="h-5 w-5 text-destructive" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">{overduePayments.length}</p>
-                  <p className="text-xs text-muted-foreground">Overdue</p>
-                </div>
-              </CardContent>
-            </Card>
-            <Card>
-              <CardContent className="p-4 flex items-center gap-3">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <CreditCard className="h-5 w-5 text-primary" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold">₹{totalPendingAmount.toLocaleString()}</p>
-                  <p className="text-xs text-muted-foreground">Total Due</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        )}
+
+
+        {/* Time toggle */}
+        <div className="flex flex-wrap items-center gap-3 p-3 rounded-xl border bg-card">
+          <ToggleGroup type="single" value={timeMode} onValueChange={(v) => v && setTimeMode(v as TimeMode)}>
+            <ToggleGroupItem value="all">All Time</ToggleGroupItem>
+            <ToggleGroupItem value="month">Month</ToggleGroupItem>
+            <ToggleGroupItem value="year">Year</ToggleGroupItem>
+          </ToggleGroup>
+
+          {timeMode === 'month' && (
+            <Select value={String(filterMonth)} onValueChange={(v) => setFilterMonth(Number(v))}>
+              <SelectTrigger className="w-[130px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {MONTHS.map((m, i) => <SelectItem key={i} value={String(i)}>{m}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+
+          {timeMode !== 'all' && (
+            <Select value={String(filterYear)} onValueChange={(v) => setFilterYear(Number(v))}>
+              <SelectTrigger className="w-[110px]"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {yearOptions.map(y => <SelectItem key={y} value={String(y)}>{y}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          )}
+
+          <span className="ml-auto text-xs text-muted-foreground">
+            Showing <span className="font-medium text-foreground">{filteredPayments.length}</span> of {payments?.length ?? 0}
+          </span>
+        </div>
 
         <Tabs defaultValue="all">
-          <TabsList>
-            <TabsTrigger value="all">All ({payments?.length ?? 0})</TabsTrigger>
+          <TabsList className="w-full overflow-x-auto flex-nowrap justify-start">
+            <TabsTrigger value="all">All ({filteredPayments.length})</TabsTrigger>
             <TabsTrigger value="pending">Pending ({pendingPayments.length})</TabsTrigger>
             <TabsTrigger value="overdue">Overdue ({overduePayments.length})</TabsTrigger>
             <TabsTrigger value="paid">Paid ({paidPayments.length})</TabsTrigger>
@@ -258,15 +419,55 @@ export default function PaymentsPage() {
                 </div>
               ) : (
                 <>
-                  <TabsContent value="all" className="m-0"><PaymentTable data={payments} showMarkPaid /></TabsContent>
-                  <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid /></TabsContent>
-                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid /></TabsContent>
-                  <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} /></TabsContent>
+                  <TabsContent value="all" className="m-0"><PaymentTable data={filteredPayments} showMarkPaid pageKey="all" /></TabsContent>
+                  <TabsContent value="pending" className="m-0"><PaymentTable data={pendingPayments} showMarkPaid pageKey="pending" /></TabsContent>
+                  <TabsContent value="overdue" className="m-0"><PaymentTable data={overduePayments} showMarkPaid pageKey="overdue" /></TabsContent>
+                  <TabsContent value="paid" className="m-0"><PaymentTable data={paidPayments} pageKey="paid" /></TabsContent>
                 </>
               )}
             </CardContent>
           </Card>
         </Tabs>
+
+        <AlertDialog open={!!confirmAction} onOpenChange={(o) => !o && setConfirmAction(null)}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>
+                {confirmAction?.type === 'delete' ? 'Delete payment?' : 'Mark payment as paid?'}
+              </AlertDialogTitle>
+              <AlertDialogDescription asChild>
+                <div className="space-y-3">
+                  {confirmAction && (
+                    <div className="rounded-lg border bg-muted/30 p-3 text-sm text-foreground">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Member</span>
+                        <span className="font-medium">{confirmAction.payment.members?.name ?? '—'}</span>
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-muted-foreground">Amount</span>
+                        <span className="font-medium">₹{Number(confirmAction.payment.amount).toLocaleString()}</span>
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-muted-foreground">Date</span>
+                        <span className="font-medium">{format(new Date(confirmAction.payment.payment_date), 'dd MMM yyyy')}</span>
+                      </div>
+                    </div>
+                  )}
+                  <p>Are you sure you want to proceed?</p>
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleConfirm}
+                className={cn(confirmAction?.type === 'delete' && 'bg-destructive text-destructive-foreground hover:bg-destructive/90')}
+              >
+                Confirm
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
   );
 }

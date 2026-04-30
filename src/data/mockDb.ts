@@ -30,18 +30,22 @@ export interface PlanRow {
 export interface MemberRow {
   id: string; user_id: string; name: string; phone: string; plan_id: string | null;
   start_date: string; expiry_date: string; status: string; created_at: string;
+  is_deleted?: boolean; deleted_at?: string | null;
 }
 export interface PaymentRow {
   id: string; user_id: string; member_id: string; amount: number; payment_date: string;
   method: string; status: string; note: string | null; created_at: string;
+  is_deleted?: boolean; deleted_at?: string | null;
 }
 export interface ExpenseRow {
   id: string; user_id: string; title: string; amount: number; expense_date: string;
   category: string | null; created_at: string;
+  is_deleted?: boolean; deleted_at?: string | null;
 }
 export interface LeadRow {
   id: string; user_id: string; name: string; phone: string; fitness_goal: string | null;
   status: string; created_at: string; updated_at: string;
+  is_deleted?: boolean; deleted_at?: string | null;
 }
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: string; is_enabled: boolean;
