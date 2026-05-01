@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { BrandingProvider } from "./components/BrandingProvider";
 import { DemoModeProvider } from "./demo/DemoModeContext";
+import { DemoQuerySync } from "./demo/DemoQuerySync";
 import LandingPage from "./pages/LandingPage";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
 import MembersPage from "./pages/MembersPage";
@@ -85,6 +86,7 @@ const App = () => {
       <Toaster />
       <BrowserRouter>
         <DemoModeProvider>
+          <DemoQuerySync />
           <BrandingProvider>
             <Routes>
             <Route path="/" element={<LandingPage />} />
