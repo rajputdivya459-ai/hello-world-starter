@@ -26,7 +26,6 @@ export async function getPlans(): Promise<PlanRow[]> {
 
 export async function createPlan(p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }): Promise<PlanRow> {
   if (useDemo()) return demo.createPlan(p) as any;
-
   const row: PlanRow = { id: genId(), user_id: 'demo-user', ...p, created_at: new Date().toISOString() };
   const d = db();
   d.plans.push(row);
@@ -36,7 +35,6 @@ export async function createPlan(p: { name: string; price: number; duration_days
 
 export async function updatePlan(id: string, p: { name: string; price: number; duration_days: number; category?: string; benefits?: string[]; is_highlighted?: boolean; show_on_homepage?: boolean }): Promise<PlanRow> {
   if (useDemo()) return demo.updatePlan(id, p) as any;
-
   const d = db();
   const idx = d.plans.findIndex(x => x.id === id);
   if (idx === -1) throw new Error('Plan not found');
@@ -56,7 +54,6 @@ export async function deletePlan(id: string): Promise<void> {
 // ─── Members ───
 export async function getMembers(): Promise<(MemberRow & { plans?: { name: string; duration_days: number } | null })[]> {
   if (useDemo()) return demo.getMembers() as any;
-
   const d = db();
   const today = new Date().toISOString().split('T')[0];
   return d.members
@@ -74,7 +71,6 @@ export async function getMembers(): Promise<(MemberRow & { plans?: { name: strin
 
 export async function createMember(m: { name: string; phone: string; plan_id: string; start_date: string; expiry_date: string }): Promise<MemberRow> {
   if (useDemo()) return demo.createMember(m) as any;
-
   const row: MemberRow = { id: genId(), user_id: 'demo-user', ...m, status: 'active', created_at: new Date().toISOString(), is_deleted: false, deleted_at: null };
   const d = db();
   d.members.push(row);
@@ -84,7 +80,6 @@ export async function createMember(m: { name: string; phone: string; plan_id: st
 
 export async function updateMember(id: string, m: { name: string; phone: string; plan_id: string; start_date: string; expiry_date: string }): Promise<MemberRow> {
   if (useDemo()) return demo.updateMember(id, m) as any;
-
   const d = db();
   const idx = d.members.findIndex(x => x.id === id);
   if (idx === -1) throw new Error('Member not found');
@@ -102,7 +97,6 @@ export async function deleteMember(id: string): Promise<void> {
 // ─── Payments ───
 export async function getPayments(): Promise<(PaymentRow & { members?: { name: string } | null })[]> {
   if (useDemo()) return demo.getPayments() as any;
-
   const d = db();
   return d.payments
     .filter(p => !p.is_deleted)
@@ -115,7 +109,6 @@ export async function getPayments(): Promise<(PaymentRow & { members?: { name: s
 
 export async function createPayment(p: { member_id: string; amount: number; payment_date: string; method: string; status: string; note?: string }): Promise<PaymentRow> {
   if (useDemo()) return demo.createPayment(p) as any;
-
   const row: PaymentRow = { id: genId(), user_id: 'demo-user', ...p, note: p.note || null, created_at: new Date().toISOString(), is_deleted: false, deleted_at: null };
   const d = db();
   d.payments.push(row);
@@ -148,7 +141,6 @@ export async function getExpenses(): Promise<ExpenseRow[]> {
 
 export async function createExpense(e: { title: string; amount: number; expense_date: string; category?: string }): Promise<ExpenseRow> {
   if (useDemo()) return demo.createExpense(e) as any;
-
   const row: ExpenseRow = { id: genId(), user_id: 'demo-user', ...e, category: e.category || null, created_at: new Date().toISOString(), is_deleted: false, deleted_at: null };
   const d = db();
   d.expenses.push(row);
@@ -170,7 +162,6 @@ export async function getLeads(): Promise<LeadRow[]> {
 
 export async function createLead(l: { name: string; phone: string; fitness_goal?: string; status?: string }): Promise<LeadRow> {
   if (useDemo()) return demo.createLead(l) as any;
-
   const row: LeadRow = { id: genId(), user_id: 'demo-user', ...l, fitness_goal: l.fitness_goal || null, status: l.status || 'new', created_at: new Date().toISOString(), updated_at: new Date().toISOString(), is_deleted: false, deleted_at: null };
   const d = db();
   d.leads.push(row);
@@ -197,7 +188,6 @@ export async function deleteLead(id: string): Promise<void> {
 
 export async function convertLeadToMember(params: { leadId: string; planId: string; startDate: string; expiryDate: string; name: string; phone: string }): Promise<void> {
   if (useDemo()) return demo.convertLeadToMember(params) as any;
-
   const d = db();
   // Create member
   d.members.push({
@@ -393,7 +383,6 @@ export async function upsertContactSettings(updates: Partial<Pick<ContactSetting
 // ─── Renew Membership ───
 export async function renewMembership(params: { memberId: string; planId: string; durationDays: number; amount: number; currentExpiry: string; method?: string }): Promise<void> {
   if (useDemo()) return demo.renewMembership(params) as any;
-
   const d = db();
   const today = new Date();
   const expiryBase = new Date(params.currentExpiry) > today ? new Date(params.currentExpiry) : today;
