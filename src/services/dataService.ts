@@ -1,9 +1,15 @@
 /**
  * Data service abstraction layer.
  * All data operations go through here. Currently backed by local mock data.
- * Switch DATA_SOURCE to 'supabase' for production migration.
+ *
+ * When demo mode is active (`shouldUseDemo()` true), every function
+ * delegates to `src/demo/demoDataService.ts`, which reads from the
+ * multi-vendor seedDemoData fixture in localStorage and enforces RBAC.
  */
 import { getDb, setDb, genId, type MockDb, type MemberRow, type PlanRow, type PaymentRow, type ExpenseRow, type LeadRow, type WebsiteContentRow, type GymSettingsRow, type ContactSettingsRow } from '@/data/mockDb';
+import * as demo from '@/demo/demoDataService';
+
+const useDemo = () => demo.shouldUseDemo();
 
 // Simulate async
 const delay = () => new Promise<void>(r => setTimeout(r, 50));
