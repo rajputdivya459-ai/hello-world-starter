@@ -19,6 +19,7 @@ function save(d: MockDb) { setDb(d); }
 
 // ─── Plans ───
 export async function getPlans(): Promise<PlanRow[]> {
+  if (useDemo()) return demo.getPlans() as any;
   await delay();
   return [...db().plans].sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -43,6 +44,7 @@ export async function updatePlan(id: string, p: { name: string; price: number; d
 }
 
 export async function deletePlan(id: string): Promise<void> {
+  if (useDemo()) return demo.deletePlan(id) as any;
   await delay();
   const d = db();
   d.plans = d.plans.filter(x => x.id !== id);
@@ -88,6 +90,7 @@ export async function updateMember(id: string, m: { name: string; phone: string;
 }
 
 export async function deleteMember(id: string): Promise<void> {
+  if (useDemo()) return demo.deleteMember(id) as any;
   await softDelete('member', id);
 }
 
@@ -114,10 +117,12 @@ export async function createPayment(p: { member_id: string; amount: number; paym
 }
 
 export async function deletePayment(id: string): Promise<void> {
+  if (useDemo()) return demo.deletePayment(id) as any;
   await softDelete('payment', id);
 }
 
 export async function updatePaymentStatus(id: string, status: string): Promise<void> {
+  if (useDemo()) return demo.updatePaymentStatus(id, status) as any;
   await delay();
   const d = db();
   const idx = d.payments.findIndex(x => x.id === id);
@@ -129,6 +134,7 @@ export async function updatePaymentStatus(id: string, status: string): Promise<v
 
 // ─── Expenses ───
 export async function getExpenses(): Promise<ExpenseRow[]> {
+  if (useDemo()) return demo.getExpenses() as any;
   await delay();
   return [...db().expenses].filter(e => !e.is_deleted).sort((a, b) => b.expense_date.localeCompare(a.expense_date));
 }
@@ -143,11 +149,13 @@ export async function createExpense(e: { title: string; amount: number; expense_
 }
 
 export async function deleteExpense(id: string): Promise<void> {
+  if (useDemo()) return demo.deleteExpense(id) as any;
   await softDelete('expense', id);
 }
 
 // ─── Leads ───
 export async function getLeads(): Promise<LeadRow[]> {
+  if (useDemo()) return demo.getLeads() as any;
   await delay();
   return [...db().leads].filter(l => !l.is_deleted).sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
@@ -162,6 +170,7 @@ export async function createLead(l: { name: string; phone: string; fitness_goal?
 }
 
 export async function updateLeadStatus(id: string, status: string): Promise<void> {
+  if (useDemo()) return demo.updateLeadStatus(id, status) as any;
   await delay();
   const d = db();
   const idx = d.leads.findIndex(x => x.id === id);
@@ -173,6 +182,7 @@ export async function updateLeadStatus(id: string, status: string): Promise<void
 }
 
 export async function deleteLead(id: string): Promise<void> {
+  if (useDemo()) return demo.deleteLead(id) as any;
   await softDelete('lead', id);
 }
 
@@ -398,6 +408,7 @@ export async function renewMembership(params: { memberId: string; planId: string
 
 // ─── Dashboard Stats ───
 export async function getDashboardStats() {
+  if (useDemo()) return demo.getDashboardStats() as any;
   await delay();
   const raw = db();
   const d: MockDb = {
@@ -471,6 +482,7 @@ export async function getDashboardStats() {
 
 // ─── Revenue Chart ───
 export async function getRevenueChart() {
+  if (useDemo()) return demo.getRevenueChart() as any;
   await delay();
   const raw = db();
   const d = { ...raw, payments: raw.payments.filter(p => !p.is_deleted) };
@@ -491,6 +503,7 @@ export async function getRevenueChart() {
 
 // ─── Setup Detection ───
 export async function hasAnyData(): Promise<boolean> {
+  if (useDemo()) return demo.hasAnyData() as any;
   await delay();
   return db().plans.length > 0;
 }
@@ -551,6 +564,7 @@ function bucketLabelsForRange(from: Date, to: Date, granularity: 'day' | 'month'
 }
 
 export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | 'month' = 'day'): Promise<AnalyticsResult> {
+  if (useDemo()) return demo.getAnalytics(range, granularity) as any;
   await delay();
   const raw = db();
   const d: MockDb = {
