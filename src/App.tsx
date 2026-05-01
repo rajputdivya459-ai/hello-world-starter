@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { DashboardLayout } from "@/components/layout/DashboardLayout";
 import { BrandingProvider } from "./components/BrandingProvider";
+import { DemoModeProvider } from "./demo/DemoModeContext";
 import LandingPage from "./pages/LandingPage";
 import AnalyticsDashboardPage from "./pages/AnalyticsDashboardPage";
 import MembersPage from "./pages/MembersPage";
@@ -83,8 +84,9 @@ const App = () => {
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
-        <BrandingProvider>
-          <Routes>
+        <DemoModeProvider>
+          <BrandingProvider>
+            <Routes>
             <Route path="/" element={<LandingPage />} />
             <Route path="/gallery" element={<GalleryPage />} />
             <Route path="/plans" element={<PublicPlansPage />} />
@@ -97,8 +99,9 @@ const App = () => {
             <Route path="/products/:id" element={<PublicProductDetailPage />} />
             <Route path="/app/*" element={<AppLayout />} />
             <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrandingProvider>
+            </Routes>
+          </BrandingProvider>
+        </DemoModeProvider>
       </BrowserRouter>
     </TooltipProvider>
     </QueryClientProvider>
