@@ -666,6 +666,7 @@ export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | '
         id: p.id, member_name: member?.name ?? 'Unknown',
         amount: p.amount, payment_date: p.payment_date,
         method: p.method, status: p.status,
+        payment_type: p.payment_type ?? 'membership',
       };
     });
 
@@ -677,12 +678,25 @@ export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | '
       created_at: l.created_at,
     }));
 
+  // PT analytics
+  const ptRevenue = paid.filter(p => p.payment_type === 'pt').reduce((s, p) => s + p.amount, 0);
+  const membershipRevenue = totalRevenue - ptRevenue;
+  const activePtMembers = new Set(
+    d.trainer_assignments
+      .filter(a => a.sessions_completed < a.total_sessions)
+      .map(a => a.member_id)
+  ).size;
+  const ptSessionsCompleted = d.trainer_sessions
+    .filter(s => s.status === 'completed' && inRange(s.date))
+    .length;
+
   return {
     kpis: {
       totalRevenue, totalExpenses, netProfit: totalRevenue - totalExpenses,
       newMembers, membersLeft, activeMembers,
       pendingPayments, pendingAmount,
       newLeads, convertedLeads,
+      ptRevenue, membershipRevenue, activePtMembers, ptSessionsCompleted,
     },
     series,
     planDistribution,
