@@ -59,6 +59,9 @@ export interface MemberRow {
 export interface PaymentRow {
   id: string; user_id: string; member_id: string; amount: number; payment_date: string;
   method: string; status: string; note: string | null; created_at: string;
+  payment_type?: 'membership' | 'pt';
+  assignment_id?: string | null;
+  trainer_id?: string | null;
   is_deleted?: boolean; deleted_at?: string | null;
 }
 export interface ExpenseRow {

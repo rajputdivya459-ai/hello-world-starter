@@ -523,12 +523,20 @@ export interface AnalyticsResult {
     pendingAmount: number;
     newLeads: number;
     convertedLeads: number;
+    /** Revenue from PT package payments within range. */
+    ptRevenue: number;
+    /** Revenue from membership payments within range. */
+    membershipRevenue: number;
+    /** Active PT clients (assignments with sessions remaining). */
+    activePtMembers: number;
+    /** Sessions completed within range. */
+    ptSessionsCompleted: number;
   };
   series: { label: string; revenue: number; expenses: number; newMembers: number }[];
   planDistribution: { name: string; value: number }[];
   expenseBreakdown: { name: string; value: number }[];
   members: { id: string; name: string; phone: string; plan: string; start_date: string; expiry_date: string; status: string }[];
-  payments: { id: string; member_name: string; amount: number; payment_date: string; method: string; status: string }[];
+  payments: { id: string; member_name: string; amount: number; payment_date: string; method: string; status: string; payment_type?: string }[];
   leads: { id: string; name: string; phone: string; goal: string; status: string; created_at: string }[];
   topDay?: { label: string; revenue: number };
 }
@@ -658,6 +666,7 @@ export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | '
         id: p.id, member_name: member?.name ?? 'Unknown',
         amount: p.amount, payment_date: p.payment_date,
         method: p.method, status: p.status,
+        payment_type: p.payment_type ?? 'membership',
       };
     });
 
@@ -669,12 +678,25 @@ export async function getAnalytics(range: AnalyticsRange, granularity: 'day' | '
       created_at: l.created_at,
     }));
 
+  // PT analytics
+  const ptRevenue = paid.filter(p => p.payment_type === 'pt').reduce((s, p) => s + p.amount, 0);
+  const membershipRevenue = totalRevenue - ptRevenue;
+  const activePtMembers = new Set(
+    d.trainer_assignments
+      .filter(a => a.sessions_completed < a.total_sessions)
+      .map(a => a.member_id)
+  ).size;
+  const ptSessionsCompleted = d.trainer_sessions
+    .filter(s => s.status === 'completed' && inRange(s.date))
+    .length;
+
   return {
     kpis: {
       totalRevenue, totalExpenses, netProfit: totalRevenue - totalExpenses,
       newMembers, membersLeft, activeMembers,
       pendingPayments, pendingAmount,
       newLeads, convertedLeads,
+      ptRevenue, membershipRevenue, activePtMembers, ptSessionsCompleted,
     },
     series,
     planDistribution,
@@ -754,7 +776,17 @@ export async function createTrainerAssignment(a: { trainer_id: string; member_id
     total_sessions: a.total_sessions, sessions_completed: 0,
     price: a.price, created_at: new Date().toISOString(),
   };
-  d.trainer_assignments.push(row); save(d); return row;
+  d.trainer_assignments.push(row);
+  // Auto-create PT payment so revenue flows through main payment system
+  if (a.price > 0) {
+    d.payments.push({
+      id: genId(), user_id: DEMO_VENDOR_FALLBACK, member_id: a.member_id,
+      amount: a.price, payment_date: a.start_date, method: 'cash', status: 'paid',
+      note: 'PT package', payment_type: 'pt', assignment_id: row.id, trainer_id: a.trainer_id,
+      created_at: new Date().toISOString(), is_deleted: false, deleted_at: null,
+    });
+  }
+  save(d); return row;
 }
 
 export async function deleteTrainerAssignment(id: string): Promise<void> {
@@ -763,6 +795,7 @@ export async function deleteTrainerAssignment(id: string): Promise<void> {
   const d = db();
   d.trainer_assignments = d.trainer_assignments.filter(x => x.id !== id);
   d.trainer_sessions = d.trainer_sessions.filter(x => x.assignment_id !== id);
+  // Keep PT payment history (revenue already realized) — only mark soft-deleted if needed.
   save(d);
 }
 
