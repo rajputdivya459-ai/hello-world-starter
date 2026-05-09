@@ -36,6 +36,9 @@ import PublicProductDetailPage from "./pages/PublicProductDetailPage";
 import OwnerSummaryPage from "./pages/OwnerSummaryPage";
 import InvoiceSettingsPage from "./pages/InvoiceSettingsPage";
 import RecycleBinPage from "./pages/RecycleBinPage";
+import EmployeeAccessPage from "./pages/EmployeeAccessPage";
+import TrainersPage from "./pages/TrainersPage";
+import TrainerDetailPage from "./pages/TrainerDetailPage";
 import { useEffect } from "react";
 import { runRecycleCleanup } from "./services/dataService";
 
@@ -64,7 +67,11 @@ function AppLayout() {
         <Route path="contact" element={<ContactSettingsPage />} />
         <Route path="settings" element={<BrandingSettingsPage />} />
         <Route path="settings/invoice" element={<InvoiceSettingsPage />} />
+        <Route path="trainers" element={<TrainersPage />} />
+        <Route path="trainers/:trainerId" element={<TrainerDetailPage />} />
         <Route path="recycle" element={<RecycleBinPage />} />
+        <Route path="employee-access" element={<EmployeeAccessPage />} />
+        <Route path="permissions" element={<EmployeeAccessPage />} />
       </Routes>
     </DashboardLayout>
   );
