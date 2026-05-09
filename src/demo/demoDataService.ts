@@ -90,7 +90,10 @@ function adaptPayment(p: DemoPayment, members: DemoMember[]) {
     payment_date: p.date,
     method: p.method,
     status: p.status,
-    note: null,
+    note: p.note ?? null,
+    payment_type: p.payment_type ?? 'membership',
+    assignment_id: p.assignment_id ?? null,
+    trainer_id: p.trainer_id ?? null,
     created_at: new Date(p.date).toISOString(),
     is_deleted: false,
     deleted_at: null,
@@ -696,15 +699,33 @@ export async function createTrainerAssignment(a: { trainer_id: string; member_id
   if (all.some(x => x.trainer_id === a.trainer_id && x.member_id === a.member_id && x.sessions_completed < x.total_sessions)) {
     throw new Error('This member already has an active assignment with this trainer');
   }
+  const vendorId = activeVendorId();
   const row: TrainerAssignment = {
     id: genId('assign'),
-    vendor_id: activeVendorId(),
+    vendor_id: vendorId,
     trainer_id: a.trainer_id, member_id: a.member_id,
     plan_type: 'PT', start_date: a.start_date, end_date: a.end_date,
     total_sessions: a.total_sessions, sessions_completed: 0,
     price: a.price, created_at: nowIso(),
   };
   demoStore.setTrainerAssignments([...all, row]);
+  // Auto-create PT payment so revenue is captured in main payment system + analytics
+  if (a.price > 0) {
+    const ptPay: DemoPayment = {
+      id: genId('pay'),
+      vendor_id: vendorId,
+      member_id: a.member_id,
+      amount: a.price,
+      status: 'paid',
+      date: a.start_date,
+      method: 'cash',
+      payment_type: 'pt',
+      assignment_id: row.id,
+      trainer_id: a.trainer_id,
+      note: 'PT package',
+    };
+    demoStore.setPayments([...demoStore.getPayments(), ptPay]);
+  }
   emitDemoChange();
   return row;
 }

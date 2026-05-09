@@ -754,7 +754,17 @@ export async function createTrainerAssignment(a: { trainer_id: string; member_id
     total_sessions: a.total_sessions, sessions_completed: 0,
     price: a.price, created_at: new Date().toISOString(),
   };
-  d.trainer_assignments.push(row); save(d); return row;
+  d.trainer_assignments.push(row);
+  // Auto-create PT payment so revenue flows through main payment system
+  if (a.price > 0) {
+    d.payments.push({
+      id: genId(), user_id: DEMO_VENDOR_FALLBACK, member_id: a.member_id,
+      amount: a.price, payment_date: a.start_date, method: 'cash', status: 'paid',
+      note: 'PT package', payment_type: 'pt', assignment_id: row.id, trainer_id: a.trainer_id,
+      created_at: new Date().toISOString(), is_deleted: false, deleted_at: null,
+    });
+  }
+  save(d); return row;
 }
 
 export async function deleteTrainerAssignment(id: string): Promise<void> {
@@ -763,6 +773,7 @@ export async function deleteTrainerAssignment(id: string): Promise<void> {
   const d = db();
   d.trainer_assignments = d.trainer_assignments.filter(x => x.id !== id);
   d.trainer_sessions = d.trainer_sessions.filter(x => x.assignment_id !== id);
+  // Keep PT payment history (revenue already realized) — only mark soft-deleted if needed.
   save(d);
 }
 
