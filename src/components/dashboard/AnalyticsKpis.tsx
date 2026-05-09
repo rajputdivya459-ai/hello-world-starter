@@ -1,5 +1,5 @@
 import { Card, CardContent } from '@/components/ui/card';
-import { LucideIcon, IndianRupee, Receipt, TrendingUp, UserPlus, UserMinus, Users, AlertCircle, Target } from 'lucide-react';
+import { LucideIcon, IndianRupee, Receipt, TrendingUp, UserPlus, UserMinus, Users, AlertCircle, Target, Dumbbell, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import type { AnalyticsResult } from '@/services/dataService';
 
