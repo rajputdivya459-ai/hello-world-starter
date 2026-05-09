@@ -619,10 +619,19 @@ export async function getAnalytics(range: { from: string; to: string }, granular
     .map(p => ({
       id: p.id, member_name: memberMap.get(p.member_id) ?? 'Unknown',
       amount: p.amount, payment_date: p.date, method: p.method, status: p.status,
+      payment_type: p.payment_type ?? 'membership',
     }));
   const leadRows = leadsInRange
     .sort((a, b) => b.created_at.localeCompare(a.created_at))
     .map(l => ({ id: l.id, name: l.name, phone: l.phone, goal: l.goal, status: l.status === 'converted' ? 'joined' : l.status, created_at: l.created_at }));
+
+  // PT analytics
+  const ptRevenue = paid.filter(p => p.payment_type === 'pt').reduce((s, p) => s + p.amount, 0);
+  const membershipRevenue = totalRevenue - ptRevenue;
+  const assignments = scope(demoStore.getTrainerAssignments());
+  const trainerSessions = scope(demoStore.getTrainerSessions());
+  const activePtMembers = new Set(assignments.filter(a => a.sessions_completed < a.total_sessions).map(a => a.member_id)).size;
+  const ptSessionsCompleted = trainerSessions.filter(s => s.status === 'completed' && inRange(s.date)).length;
 
   return {
     kpis: {
@@ -630,6 +639,7 @@ export async function getAnalytics(range: { from: string; to: string }, granular
       newMembers, membersLeft, activeMembers,
       pendingPayments, pendingAmount,
       newLeads, convertedLeads,
+      ptRevenue, membershipRevenue, activePtMembers, ptSessionsCompleted,
     },
     series, planDistribution, expenseBreakdown,
     members: memberRows, payments: paymentRows, leads: leadRows,
