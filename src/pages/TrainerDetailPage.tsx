@@ -37,6 +37,14 @@ export default function TrainerDetailPage() {
   const tSessions = useMemo(() => sessions.filter(s => s.trainer_id === trainerId), [sessions, trainerId]);
   const memberById = useMemo(() => new Map(members.map(m => [m.id, m])), [members]);
 
+  // Pagination + search state
+  const [aSearch, setASearch] = useState('');
+  const [aPage, setAPage] = useState(1);
+  const [aPageSize, setAPageSize] = useState(10);
+  const [sSearch, setSSearch] = useState('');
+  const [sPage, setSPage] = useState(1);
+  const [sPageSize, setSPageSize] = useState(10);
+
   if (!trainer) {
     return (
       <div className="space-y-4">
