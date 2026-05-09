@@ -2,12 +2,14 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useMembers } from '@/hooks/useMembers';
 import { usePayments } from '@/hooks/usePayments';
 import { usePlans } from '@/hooks/usePlans';
+import { useTrainers, useTrainerAssignments } from '@/hooks/useTrainers';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell, Download, FileText } from 'lucide-react';
+import { ArrowLeft, MessageCircle, CreditCard, RefreshCw, User, Phone, Calendar, Shield, Bell, Download, FileText, Dumbbell } from 'lucide-react';
 import { format, differenceInDays } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { RenewDialog } from '@/components/RenewDialog';
@@ -24,6 +26,8 @@ export default function MemberProfilePage() {
   const { data: members, isLoading: membersLoading } = useMembers();
   const { data: payments, isLoading: paymentsLoading } = usePayments();
   const { data: plans } = usePlans();
+  const { data: trainers = [] } = useTrainers();
+  const { data: assignments = [] } = useTrainerAssignments();
   const [renewOpen, setRenewOpen] = useState(false);
   const [paymentOpen, setPaymentOpen] = useState(false);
   const [reminderOpen, setReminderOpen] = useState(false);
@@ -32,6 +36,10 @@ export default function MemberProfilePage() {
   const member = members?.find(m => m.id === memberId);
   const memberPayments = payments?.filter(p => p.member_id === memberId) ?? [];
   const totalPaid = memberPayments.filter(p => p.status === 'paid').reduce((sum, p) => sum + Number(p.amount), 0);
+  const ptPaid = memberPayments.filter(p => p.status === 'paid' && (p as any).payment_type === 'pt').reduce((s, p) => s + Number(p.amount), 0);
+  const memberAssigns = assignments.filter(a => a.member_id === memberId);
+  const activeAssign = memberAssigns.find(a => a.sessions_completed < a.total_sessions);
+  const memberTrainer = activeAssign ? trainers.find(t => t.id === activeAssign.trainer_id) : undefined;
 
   if (membersLoading) {
     return (
