@@ -523,12 +523,20 @@ export interface AnalyticsResult {
     pendingAmount: number;
     newLeads: number;
     convertedLeads: number;
+    /** Revenue from PT package payments within range. */
+    ptRevenue: number;
+    /** Revenue from membership payments within range. */
+    membershipRevenue: number;
+    /** Active PT clients (assignments with sessions remaining). */
+    activePtMembers: number;
+    /** Sessions completed within range. */
+    ptSessionsCompleted: number;
   };
   series: { label: string; revenue: number; expenses: number; newMembers: number }[];
   planDistribution: { name: string; value: number }[];
   expenseBreakdown: { name: string; value: number }[];
   members: { id: string; name: string; phone: string; plan: string; start_date: string; expiry_date: string; status: string }[];
-  payments: { id: string; member_name: string; amount: number; payment_date: string; method: string; status: string }[];
+  payments: { id: string; member_name: string; amount: number; payment_date: string; method: string; status: string; payment_type?: string }[];
   leads: { id: string; name: string; phone: string; goal: string; status: string; created_at: string }[];
   topDay?: { label: string; revenue: number };
 }
