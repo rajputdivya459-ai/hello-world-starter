@@ -61,6 +61,16 @@ export function AnalyticsKpis({ kpis }: { kpis: AnalyticsResult['kpis'] }) {
       to: '/app/payments',
     },
     { title: 'New Leads', value: kpis.newLeads.toString(), hint: `${kpis.convertedLeads} converted`, icon: Target, tone: 'muted', to: '/app/leads' },
+    {
+      title: 'PT Revenue', value: `₹${(kpis.ptRevenue ?? 0).toLocaleString()}`,
+      hint: `Membership ₹${(kpis.membershipRevenue ?? 0).toLocaleString()}`,
+      icon: Dumbbell, tone: 'success', to: '/app/trainers',
+    },
+    {
+      title: 'Active PT Clients', value: (kpis.activePtMembers ?? 0).toString(),
+      hint: `${kpis.ptSessionsCompleted ?? 0} sessions in range`,
+      icon: Activity, tone: 'primary', to: '/app/trainers',
+    },
   ];
 
   return (
