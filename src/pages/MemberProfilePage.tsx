@@ -170,7 +170,48 @@ export default function MemberProfilePage() {
         </Card>
       )}
 
-      {/* Total Paid */}
+      {/* Personal Training */}
+      {memberAssigns.length > 0 && (
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-lg font-display flex items-center gap-2">
+              <Dumbbell className="h-4 w-4 text-primary" /> Personal Training
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {activeAssign ? (
+              <>
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                  <div>
+                    <p className="text-sm text-muted-foreground">Assigned Trainer</p>
+                    <p className="font-semibold">{memberTrainer?.name ?? '—'}</p>
+                    <p className="text-xs text-muted-foreground">{memberTrainer?.specialization}</p>
+                  </div>
+                  <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30" variant="outline">PT Active</Badge>
+                </div>
+                <div>
+                  <div className="flex justify-between text-xs mb-1">
+                    <span>Sessions: {activeAssign.sessions_completed}/{activeAssign.total_sessions}</span>
+                    <span>{activeAssign.total_sessions - activeAssign.sessions_completed} remaining</span>
+                  </div>
+                  <Progress value={(activeAssign.sessions_completed / activeAssign.total_sessions) * 100} className="h-2" />
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div><p className="text-xs text-muted-foreground">Package</p><p className="font-medium">₹{activeAssign.price.toLocaleString()}</p></div>
+                  <div><p className="text-xs text-muted-foreground">Period</p><p className="font-medium">{format(new Date(activeAssign.start_date), 'dd MMM')} – {format(new Date(activeAssign.end_date), 'dd MMM')}</p></div>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-muted-foreground">No active PT plan. {memberAssigns.length} past assignment(s).</p>
+            )}
+            {ptPaid > 0 && (
+              <div className="text-xs text-muted-foreground">Total PT spend: <span className="font-semibold text-foreground">₹{ptPaid.toLocaleString()}</span></div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+
       <Card>
         <CardContent className="p-4 flex items-center justify-between">
           <span className="text-sm text-muted-foreground">Total Amount Paid</span>
