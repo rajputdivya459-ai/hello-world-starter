@@ -36,7 +36,7 @@ function GoogleGIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-function ReviewCard({ review, index }: { review: ReviewItem; index: number }) {
+function ReviewCard({ review, index, marquee = false }: { review: ReviewItem; index: number; marquee?: boolean }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-40px' });
 
@@ -47,7 +47,7 @@ function ReviewCard({ review, index }: { review: ReviewItem; index: number }) {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.55, delay: (index % 4) * 0.07, ease: [0.22, 1, 0.36, 1] }}
       data-review-card
-      className="snap-start flex-shrink-0 w-[85%] sm:w-[320px] md:w-[300px] lg:w-[300px] flex"
+      className={`flex-shrink-0 flex ${marquee ? 'w-[300px]' : 'snap-start w-[85%] sm:w-[320px]'}`}
     >
       <div
         className="group relative h-full rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
@@ -114,6 +114,7 @@ function ReviewCard({ review, index }: { review: ReviewItem; index: number }) {
 export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const avgRating = useMemo(() => {
@@ -129,92 +130,33 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
     const el = scrollRef.current;
     if (!el) return;
     const card = el.querySelector('[data-review-card]') as HTMLElement | null;
-    const step = (card?.offsetWidth ?? 320) + 24;
+    const step = (card?.offsetWidth ?? 320) + 20;
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   }, []);
 
-  // Continuous smooth auto-scroll for desktop (>=768px). Mobile keeps existing snap-based interval scroll.
-  const rafRef = useRef<number>(0);
-  const isDesktopRef = useRef(false);
-
-  useEffect(() => {
-    isDesktopRef.current = window.matchMedia('(min-width: 768px)').matches;
-    const mql = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => { isDesktopRef.current = e.matches; };
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-
-  const autoScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll <= 0) return;
-    if (el.scrollLeft >= maxScroll - 4) {
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      scrollByAmount(1);
-    }
-  }, [scrollByAmount]);
-
+  // Mobile snap-based auto-advance (unchanged behavior)
   useEffect(() => {
     if (!isPlaying || reviews.length <= 2) return;
-
-    let cancelled = false;
-
-    const tickDesktop = () => {
-      if (cancelled) return;
-      const el = scrollRef.current;
-      if (el && isDesktopRef.current) {
-        const maxScroll = el.scrollWidth - el.clientWidth;
-        if (maxScroll > 0) {
-          if (el.scrollLeft >= maxScroll - 1) {
-            el.scrollLeft = 0;
-          } else {
-            el.scrollLeft += 0.6;
-          }
-        }
-      }
-      rafRef.current = requestAnimationFrame(tickDesktop);
-    };
-    rafRef.current = requestAnimationFrame(tickDesktop);
-
     intervalRef.current = setInterval(() => {
-      if (!isDesktopRef.current) autoScroll();
-    }, 4500);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isPlaying, autoScroll, reviews.length]);
-
-  const handleMouseEnter = () => {
-    cancelAnimationFrame(rafRef.current);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-  const handleMouseLeave = () => {
-    if (!isPlaying || reviews.length <= 2) return;
-    const tickDesktop = () => {
+      if (window.matchMedia('(min-width: 768px)').matches) return;
       const el = scrollRef.current;
-      if (el && isDesktopRef.current) {
-        const maxScroll = el.scrollWidth - el.clientWidth;
-        if (maxScroll > 0) {
-          if (el.scrollLeft >= maxScroll - 1) el.scrollLeft = 0;
-          else el.scrollLeft += 0.6;
-        }
+      if (!el) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+      if (el.scrollLeft >= maxScroll - 4) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollByAmount(1);
       }
-      rafRef.current = requestAnimationFrame(tickDesktop);
-    };
-    rafRef.current = requestAnimationFrame(tickDesktop);
-    intervalRef.current = setInterval(() => {
-      if (!isDesktopRef.current) autoScroll();
     }, 4500);
-  };
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [isPlaying, scrollByAmount, reviews.length]);
 
   const fullStars = Math.round(avgRating);
 
+  // Desktop marquee duration ~ proportional to count
+  const marqueeDuration = Math.max(20, reviews.length * 5);
+  const marqueePaused = isHovered || !isPlaying;
   return (
     <section id="reviews" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative">
       <div className="absolute inset-0 pointer-events-none">
@@ -327,16 +269,39 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
               </div>
             )}
 
+            {/* Mobile: snap-scroll (unchanged behavior) */}
             <div
               ref={scrollRef}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0 items-stretch"
+              className="md:hidden flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 items-stretch"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {reviews.map((r, i) => (
                 <ReviewCard key={i} review={r} index={i} />
               ))}
+            </div>
+
+            {/* Desktop/tablet: CSS marquee with infinite loop, pause on hover */}
+            <div
+              className="hidden md:block overflow-hidden"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              style={{
+                maskImage: 'linear-gradient(to right, transparent, black 4%, black 96%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 4%, black 96%, transparent)',
+              }}
+            >
+              <div
+                className="flex gap-5 items-stretch w-max"
+                style={{
+                  animation: `reviews-marquee ${marqueeDuration}s linear infinite`,
+                  animationPlayState: marqueePaused ? 'paused' : 'running',
+                }}
+              >
+                {[...reviews, ...reviews].map((r, i) => (
+                  <ReviewCard key={i} review={r} index={i} marquee />
+                ))}
+              </div>
+              <style>{`@keyframes reviews-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
             </div>
           </div>
         </div>
