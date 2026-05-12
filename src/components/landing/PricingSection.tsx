@@ -104,6 +104,31 @@ function PlanCard({ plan, index, isPopular, onCtaClick }: { plan: Plan; index: n
 
 export function PricingSection({ plans, content, onCtaClick, showViewAll }: PricingSectionProps) {
   const highlightedPlan = plans.find(p => p.is_highlighted);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stepNext = useCallback(() => {
+    const el = mobileScrollRef.current;
+    if (!el) return;
+    const card = el.querySelector('[data-plan-card]') as HTMLElement | null;
+    const step = (card?.offsetWidth ?? el.clientWidth * 0.88) + 16;
+    const max = el.scrollWidth - el.clientWidth;
+    if (el.scrollLeft >= max - 4) {
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: step, behavior: 'smooth' });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isPaused || plans.length <= 1) return;
+    intervalRef.current = setInterval(stepNext, 3000);
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [isPaused, stepNext, plans.length]);
+
+  const pause = () => setIsPaused(true);
+  const resume = () => setIsPaused(false);
 
   return (
     <section id="pricing" className="py-8 px-4 sm:px-6 lg:px-8 relative">
@@ -120,12 +145,20 @@ export function PricingSection({ plans, content, onCtaClick, showViewAll }: Pric
           <p className="text-center -mt-10 mb-16 text-primary/80 font-semibold text-sm">{content.cta_note}</p>
         )}
 
-        {/* Mobile: snap carousel (1 card per view). Desktop: grid */}
-        <div className="sm:hidden flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pb-4 snap-x snap-mandatory">
+        {/* Mobile: auto-sliding snap carousel (1 card per view) with extra top padding so "Most Popular" badge isn't clipped */}
+        <div
+          ref={mobileScrollRef}
+          onMouseEnter={pause}
+          onMouseLeave={resume}
+          onTouchStart={pause}
+          onTouchEnd={resume}
+          className="sm:hidden flex gap-4 overflow-x-auto scrollbar-hide -mx-4 px-4 pt-8 pb-6 snap-x snap-mandatory"
+          style={{ WebkitOverflowScrolling: 'touch' }}
+        >
           {plans.map((plan, i) => {
             const isPopular = highlightedPlan ? plan.id === highlightedPlan.id : i === Math.floor((plans.length - 1) / 2);
             return (
-              <div key={plan.id} className="min-w-[88%] snap-center flex-shrink-0">
+              <div key={plan.id} data-plan-card className="min-w-[88%] snap-center flex-shrink-0">
                 <PlanCard plan={plan} index={i} isPopular={isPopular} onCtaClick={onCtaClick} />
               </div>
             );
