@@ -114,6 +114,7 @@ function ReviewCard({ review, index, marquee = false }: { review: ReviewItem; in
 export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsCarouselProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isHovered, setIsHovered] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const avgRating = useMemo(() => {
@@ -129,92 +130,33 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
     const el = scrollRef.current;
     if (!el) return;
     const card = el.querySelector('[data-review-card]') as HTMLElement | null;
-    const step = (card?.offsetWidth ?? 320) + 24;
+    const step = (card?.offsetWidth ?? 320) + 20;
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   }, []);
 
-  // Continuous smooth auto-scroll for desktop (>=768px). Mobile keeps existing snap-based interval scroll.
-  const rafRef = useRef<number>(0);
-  const isDesktopRef = useRef(false);
-
-  useEffect(() => {
-    isDesktopRef.current = window.matchMedia('(min-width: 768px)').matches;
-    const mql = window.matchMedia('(min-width: 768px)');
-    const handler = (e: MediaQueryListEvent) => { isDesktopRef.current = e.matches; };
-    mql.addEventListener('change', handler);
-    return () => mql.removeEventListener('change', handler);
-  }, []);
-
-  const autoScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const maxScroll = el.scrollWidth - el.clientWidth;
-    if (maxScroll <= 0) return;
-    if (el.scrollLeft >= maxScroll - 4) {
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      scrollByAmount(1);
-    }
-  }, [scrollByAmount]);
-
+  // Mobile snap-based auto-advance (unchanged behavior)
   useEffect(() => {
     if (!isPlaying || reviews.length <= 2) return;
-
-    let cancelled = false;
-
-    const tickDesktop = () => {
-      if (cancelled) return;
-      const el = scrollRef.current;
-      if (el && isDesktopRef.current) {
-        const maxScroll = el.scrollWidth - el.clientWidth;
-        if (maxScroll > 0) {
-          if (el.scrollLeft >= maxScroll - 1) {
-            el.scrollLeft = 0;
-          } else {
-            el.scrollLeft += 0.6;
-          }
-        }
-      }
-      rafRef.current = requestAnimationFrame(tickDesktop);
-    };
-    rafRef.current = requestAnimationFrame(tickDesktop);
-
     intervalRef.current = setInterval(() => {
-      if (!isDesktopRef.current) autoScroll();
-    }, 4500);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafRef.current);
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isPlaying, autoScroll, reviews.length]);
-
-  const handleMouseEnter = () => {
-    cancelAnimationFrame(rafRef.current);
-    if (intervalRef.current) clearInterval(intervalRef.current);
-  };
-  const handleMouseLeave = () => {
-    if (!isPlaying || reviews.length <= 2) return;
-    const tickDesktop = () => {
+      if (window.matchMedia('(min-width: 768px)').matches) return;
       const el = scrollRef.current;
-      if (el && isDesktopRef.current) {
-        const maxScroll = el.scrollWidth - el.clientWidth;
-        if (maxScroll > 0) {
-          if (el.scrollLeft >= maxScroll - 1) el.scrollLeft = 0;
-          else el.scrollLeft += 0.6;
-        }
+      if (!el) return;
+      const maxScroll = el.scrollWidth - el.clientWidth;
+      if (maxScroll <= 0) return;
+      if (el.scrollLeft >= maxScroll - 4) {
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+      } else {
+        scrollByAmount(1);
       }
-      rafRef.current = requestAnimationFrame(tickDesktop);
-    };
-    rafRef.current = requestAnimationFrame(tickDesktop);
-    intervalRef.current = setInterval(() => {
-      if (!isDesktopRef.current) autoScroll();
     }, 4500);
-  };
+    return () => { if (intervalRef.current) clearInterval(intervalRef.current); };
+  }, [isPlaying, scrollByAmount, reviews.length]);
 
   const fullStars = Math.round(avgRating);
 
+  // Desktop marquee duration ~ proportional to count
+  const marqueeDuration = Math.max(20, reviews.length * 5);
+  const marqueePaused = isHovered || !isPlaying;
   return (
     <section id="reviews" className="py-20 md:py-28 px-4 sm:px-6 lg:px-8 relative">
       <div className="absolute inset-0 pointer-events-none">
