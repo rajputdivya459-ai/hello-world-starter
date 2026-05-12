@@ -133,10 +133,23 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
     el.scrollBy({ left: dir * step, behavior: 'smooth' });
   }, []);
 
+  // Continuous smooth auto-scroll for desktop (>=768px). Mobile keeps existing snap-based interval scroll.
+  const rafRef = useRef<number>(0);
+  const isDesktopRef = useRef(false);
+
+  useEffect(() => {
+    isDesktopRef.current = window.matchMedia('(min-width: 768px)').matches;
+    const mql = window.matchMedia('(min-width: 768px)');
+    const handler = (e: MediaQueryListEvent) => { isDesktopRef.current = e.matches; };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+
   const autoScroll = useCallback(() => {
     const el = scrollRef.current;
     if (!el) return;
     const maxScroll = el.scrollWidth - el.clientWidth;
+    if (maxScroll <= 0) return;
     if (el.scrollLeft >= maxScroll - 4) {
       el.scrollTo({ left: 0, behavior: 'smooth' });
     } else {
@@ -145,21 +158,59 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
   }, [scrollByAmount]);
 
   useEffect(() => {
-    if (isPlaying && reviews.length > 2) {
-      intervalRef.current = setInterval(autoScroll, 4500);
-    }
+    if (!isPlaying || reviews.length <= 2) return;
+
+    let cancelled = false;
+
+    const tickDesktop = () => {
+      if (cancelled) return;
+      const el = scrollRef.current;
+      if (el && isDesktopRef.current) {
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll > 0) {
+          if (el.scrollLeft >= maxScroll - 1) {
+            el.scrollLeft = 0;
+          } else {
+            el.scrollLeft += 0.6;
+          }
+        }
+      }
+      rafRef.current = requestAnimationFrame(tickDesktop);
+    };
+    rafRef.current = requestAnimationFrame(tickDesktop);
+
+    intervalRef.current = setInterval(() => {
+      if (!isDesktopRef.current) autoScroll();
+    }, 4500);
+
     return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafRef.current);
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
   }, [isPlaying, autoScroll, reviews.length]);
 
   const handleMouseEnter = () => {
+    cancelAnimationFrame(rafRef.current);
     if (intervalRef.current) clearInterval(intervalRef.current);
   };
   const handleMouseLeave = () => {
-    if (isPlaying && reviews.length > 2) {
-      intervalRef.current = setInterval(autoScroll, 4500);
-    }
+    if (!isPlaying || reviews.length <= 2) return;
+    const tickDesktop = () => {
+      const el = scrollRef.current;
+      if (el && isDesktopRef.current) {
+        const maxScroll = el.scrollWidth - el.clientWidth;
+        if (maxScroll > 0) {
+          if (el.scrollLeft >= maxScroll - 1) el.scrollLeft = 0;
+          else el.scrollLeft += 0.6;
+        }
+      }
+      rafRef.current = requestAnimationFrame(tickDesktop);
+    };
+    rafRef.current = requestAnimationFrame(tickDesktop);
+    intervalRef.current = setInterval(() => {
+      if (!isDesktopRef.current) autoScroll();
+    }, 4500);
   };
 
   const fullStars = Math.round(avgRating);
