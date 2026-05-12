@@ -190,9 +190,24 @@ export default function TrainerDetailPage() {
                             <Progress value={pct} className="h-2" />
                           </div>
                           <div className="flex gap-2">
-                            <Button size="sm" variant="outline" className="flex-1" disabled={!canEdit || done} onClick={() => handleMark(a.id, 'completed')}><CheckCircle2 className="h-4 w-4 mr-1" />Mark Done</Button>
-                            <Button size="sm" variant="outline" disabled={!canEdit} onClick={() => handleMark(a.id, 'missed')}><XCircle className="h-4 w-4" /></Button>
-                            <Button size="sm" variant="ghost" disabled={!canEdit} onClick={() => handleEnd(a.id)}><Trash2 className="h-4 w-4" /></Button>
+                            <Button size="sm" variant="outline" className="flex-1 min-h-[40px]" disabled={!canEdit || done} onClick={() => handleMark(a.id, 'completed')}>
+                              <CheckCircle2 className="h-4 w-4 mr-1" />Mark Done
+                            </Button>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button size="sm" variant="outline" className="min-h-[40px] min-w-[40px] px-2" aria-label="More actions">
+                                  <MoreVertical className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end" className="w-44">
+                                <DropdownMenuItem disabled={!canEdit} onClick={() => handleMark(a.id, 'missed')}>
+                                  <XCircle className="h-4 w-4 mr-2" /> Mark Missed
+                                </DropdownMenuItem>
+                                <DropdownMenuItem disabled={!canEdit} onClick={() => handleEnd(a.id)} className="text-destructive focus:text-destructive">
+                                  <Trash2 className="h-4 w-4 mr-2" /> End Assignment
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         </div>
                       );
