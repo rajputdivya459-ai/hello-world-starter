@@ -36,7 +36,7 @@ function GoogleGIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-function ReviewCard({ review, index }: { review: ReviewItem; index: number }) {
+function ReviewCard({ review, index, marquee = false }: { review: ReviewItem; index: number; marquee?: boolean }) {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-40px' });
 
@@ -47,7 +47,7 @@ function ReviewCard({ review, index }: { review: ReviewItem; index: number }) {
       animate={isInView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.55, delay: (index % 4) * 0.07, ease: [0.22, 1, 0.36, 1] }}
       data-review-card
-      className={`flex-shrink-0 flex ${(props as any).variant === 'marquee' ? 'w-[300px]' : 'snap-start w-[85%] sm:w-[320px] md:w-[300px] lg:w-[300px]'}`}
+      className={`flex-shrink-0 flex ${marquee ? 'w-[300px]' : 'snap-start w-[85%] sm:w-[320px]'}`}
     >
       <div
         className="group relative h-full rounded-2xl p-6 flex flex-col gap-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
