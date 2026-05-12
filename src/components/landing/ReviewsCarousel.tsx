@@ -304,7 +304,6 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
               <style>{`@keyframes reviews-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
             </div>
           </div>
-          </div>
         </div>
       </div>
     </section>
