@@ -229,22 +229,50 @@ export default function TrainersPage() {
                 {visibleTrainers.map(t => {
                   const r = rollup.get(t.id) ?? { active: 0, revenue: 0, sessions: 0 };
                   return (
-                    <button key={t.id} className="w-full text-left p-4 active:bg-muted/40" onClick={() => navigate(`/app/trainers/${t.id}`)}>
-                      <div className="flex items-center justify-between gap-3">
-                        <div className="min-w-0">
-                          <div className="font-semibold truncate">{t.name}</div>
-                          <div className="text-xs text-muted-foreground truncate">{t.specialization} · {t.experience}y</div>
-                        </div>
-                        {t.is_active
-                          ? <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30" variant="outline">Active</Badge>
-                          : <Badge variant="outline"><Power className="h-3 w-3 mr-1" />Off</Badge>}
+                    <div key={t.id} className="p-4 active:bg-muted/40">
+                      <div className="flex items-start justify-between gap-2">
+                        <button
+                          type="button"
+                          className="flex-1 min-w-0 text-left"
+                          onClick={() => navigate(`/app/trainers/${t.id}`)}
+                        >
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold truncate">{t.name}</span>
+                            {t.is_active
+                              ? <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30" variant="outline">Active</Badge>
+                              : <Badge variant="outline"><Power className="h-3 w-3 mr-1" />Off</Badge>}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate mt-0.5">{t.specialization} · {t.experience}y</div>
+                        </button>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-11 w-11 -mr-2 shrink-0" aria-label="Actions">
+                              <MoreVertical className="h-5 w-5" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-44">
+                            <DropdownMenuItem onClick={() => navigate(`/app/trainers/${t.id}`)}>
+                              <Eye className="h-4 w-4 mr-2" /> View
+                            </DropdownMenuItem>
+                            <DropdownMenuItem disabled={!canEdit} onClick={() => { setEditing(t); setOpen(true); }}>
+                              <Pencil className="h-4 w-4 mr-2" /> Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem disabled={!canEdit} onClick={() => handleDelete(t.id)} className="text-destructive focus:text-destructive">
+                              <Trash2 className="h-4 w-4 mr-2" /> Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </div>
-                      <div className="mt-2 grid grid-cols-3 gap-2 text-xs">
+                      <button
+                        type="button"
+                        className="w-full mt-2 grid grid-cols-3 gap-2 text-xs text-left"
+                        onClick={() => navigate(`/app/trainers/${t.id}`)}
+                      >
                         <div><div className="text-muted-foreground">PT</div><div className="font-semibold">{r.active}</div></div>
                         <div><div className="text-muted-foreground">Sessions</div><div className="font-semibold">{r.sessions}</div></div>
                         <div><div className="text-muted-foreground">Revenue</div><div className="font-semibold">{inr(r.revenue)}</div></div>
-                      </div>
-                    </button>
+                      </button>
+                    </div>
                   );
                 })}
               </div>
