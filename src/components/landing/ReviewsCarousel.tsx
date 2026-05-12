@@ -269,17 +269,41 @@ export function ReviewsCarousel({ reviews, content, gymName, logoUrl }: ReviewsC
               </div>
             )}
 
+            {/* Mobile: snap-scroll (unchanged behavior) */}
             <div
               ref={scrollRef}
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
-              className="flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 lg:mx-0 lg:px-0 items-stretch"
+              className="md:hidden flex gap-5 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide -mx-4 px-4 items-stretch"
               style={{ WebkitOverflowScrolling: 'touch' }}
             >
               {reviews.map((r, i) => (
                 <ReviewCard key={i} review={r} index={i} />
               ))}
             </div>
+
+            {/* Desktop/tablet: CSS marquee with infinite loop, pause on hover */}
+            <div
+              className="hidden md:block overflow-hidden"
+              onMouseEnter={() => setIsHovered(true)}
+              onMouseLeave={() => setIsHovered(false)}
+              style={{
+                maskImage: 'linear-gradient(to right, transparent, black 4%, black 96%, transparent)',
+                WebkitMaskImage: 'linear-gradient(to right, transparent, black 4%, black 96%, transparent)',
+              }}
+            >
+              <div
+                className="flex gap-5 items-stretch w-max"
+                style={{
+                  animation: `reviews-marquee ${marqueeDuration}s linear infinite`,
+                  animationPlayState: marqueePaused ? 'paused' : 'running',
+                }}
+              >
+                {[...reviews, ...reviews].map((r, i) => (
+                  <ReviewCard key={i} review={r} index={i} marquee />
+                ))}
+              </div>
+              <style>{`@keyframes reviews-marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }`}</style>
+            </div>
+          </div>
           </div>
         </div>
       </div>
