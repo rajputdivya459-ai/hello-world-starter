@@ -39,6 +39,8 @@ import RecycleBinPage from "./pages/RecycleBinPage";
 import EmployeeAccessPage from "./pages/EmployeeAccessPage";
 import TrainersPage from "./pages/TrainersPage";
 import TrainerDetailPage from "./pages/TrainerDetailPage";
+import SuperOwnerDashboardPage from "./pages/SuperOwnerDashboardPage";
+import SuperOwnersAdminPage from "./pages/SuperOwnersAdminPage";
 import { useEffect } from "react";
 import { runRecycleCleanup } from "./services/dataService";
 
@@ -72,6 +74,8 @@ function AppLayout() {
         <Route path="recycle" element={<RecycleBinPage />} />
         <Route path="employee-access" element={<EmployeeAccessPage />} />
         <Route path="permissions" element={<EmployeeAccessPage />} />
+        <Route path="super-owner-dashboard" element={<SuperOwnerDashboardPage />} />
+        <Route path="super-owners" element={<SuperOwnersAdminPage />} />
       </Routes>
     </DashboardLayout>
   );

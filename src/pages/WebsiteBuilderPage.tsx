@@ -5,7 +5,7 @@ import {
   ServicesContent, EquipmentContent, ReviewsContent, BranchesContent, StatsContent, StatItem,
   TrainerItem, TestimonialItem, GalleryMediaItem, ServiceItem, EquipmentItem, ReviewItem, BranchItem, OrbitContent, OrbitIconItem, NavbarContent, LoaderContent,
   FooterSocialContent, SupplementsContent, SupplementItem, AchievementsContent, AchievementItem,
-  ProductsContent, ProductItem,
+  ProductsContent, ProductItem, PopupContent,
 } from '@/hooks/useWebsiteContent';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -557,6 +557,35 @@ export default function WebsiteBuilderPage() {
                 renderItem={(item: ProductItem) => `${item.title}${item.coupon_code ? ' · 🎟 ' + item.coupon_code : ''}`}
               />
               <AddProductForm onAdd={item => addItem('products', item)} />
+            </SectionCard>
+          </TabsContent>
+
+          {/* ─── POPUP ─── */}
+          <TabsContent value="popup">
+            <SectionCard sectionKey="popup" toggles={toggles} setToggles={setToggles} onSave={() => save('popup')} saving={upsertSection.isPending}>
+              <p className="text-xs text-muted-foreground -mt-2">Show a sticky announcement on your public website. Visitors see it once until you change the content or update the popup.</p>
+              <Field label="Popup Title" value={drafts.popup?.title} onChange={v => updateDraft('popup', 'title', v)} placeholder="50% OFF on Annual Membership" />
+              <Field label="Message" value={drafts.popup?.message} onChange={v => updateDraft('popup', 'message', v)} placeholder="Join today and get 2 months free on yearly membership." textarea />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Field label="CTA Button Text (optional)" value={drafts.popup?.cta_text} onChange={v => updateDraft('popup', 'cta_text', v)} placeholder="Join Now" />
+                <Field label="CTA Link (optional)" value={drafts.popup?.cta_link} onChange={v => updateDraft('popup', 'cta_link', v)} placeholder="#lead-form, https://wa.me/..., /pricing" />
+              </div>
+              <Field label="Banner Image URL (optional)" value={drafts.popup?.image_url} onChange={v => updateDraft('popup', 'image_url', v)} placeholder="https://..." />
+              <div>
+                <Label className="text-xs">Theme Style</Label>
+                <Select value={drafts.popup?.theme ?? 'gradient'} onValueChange={v => updateDraft('popup', 'theme', v)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="gradient">Gradient (Premium)</SelectItem>
+                    <SelectItem value="offer">Offer Highlight (Orange)</SelectItem>
+                    <SelectItem value="dark">Dark</SelectItem>
+                    <SelectItem value="light">Light</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="rounded-lg border bg-muted/20 p-3 text-xs text-muted-foreground">
+                💡 Tip: Toggle <strong>Visible</strong> off to hide the popup. Each saved change re-shows the popup to returning visitors.
+              </div>
             </SectionCard>
           </TabsContent>
         </Tabs>

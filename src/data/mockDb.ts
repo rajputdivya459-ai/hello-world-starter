@@ -629,6 +629,19 @@ export function createSeedData(): MockDb {
       created_at: nowIso, updated_at: nowIso,
     },
     {
+      id: genId(), user_id: DEMO_USER_ID, section_key: 'popup', is_enabled: true,
+      content: {
+        is_enabled: true,
+        title: '50% OFF on Annual Membership',
+        message: 'Limited-time launch offer. Join today and lock in 12 months at half the price — plus 1 free PT session.',
+        cta_text: 'Claim Offer',
+        cta_link: '#lead-form',
+        image_url: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&q=80',
+        theme: 'gradient',
+      },
+      created_at: nowIso, updated_at: nowIso,
+    },
+    {
       id: genId(), user_id: DEMO_USER_ID, section_key: 'footer_social', is_enabled: true,
       content: {
         instagram_url: 'https://instagram.com/elitefitness',

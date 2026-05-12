@@ -54,8 +54,17 @@ export interface ProductsContent {
 }
 export interface AchievementItem { title: string; description?: string; image_url?: string; }
 export interface AchievementsContent { title?: string; subtitle?: string; items: AchievementItem[]; }
+export interface PopupContent {
+  is_enabled?: boolean;
+  title?: string;
+  message?: string;
+  cta_text?: string;
+  cta_link?: string;
+  image_url?: string;
+  theme?: 'light' | 'dark' | 'gradient' | 'offer';
+}
 
-export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats' | 'footer_social' | 'supplements' | 'achievements' | 'products';
+export type SectionKey = 'hero' | 'pricing' | 'trainers' | 'testimonials' | 'gallery' | 'services' | 'equipment' | 'reviews' | 'branches' | 'orbit' | 'navbar' | 'loader' | 'stats' | 'footer_social' | 'supplements' | 'achievements' | 'products' | 'popup';
 
 export interface WebsiteContentRow {
   id: string; user_id: string; section_key: SectionKey; is_enabled: boolean;
@@ -88,9 +97,10 @@ export const SECTION_DEFAULTS: Record<SectionKey, { label: string; defaultConten
   supplements: { label: 'Supplements', defaultContent: { title: 'Recommended Supplements', subtitle: 'Fuel your gains with our top picks.', items: [] } as SupplementsContent },
   achievements: { label: 'Achievements', defaultContent: { title: 'Achievements & Certifications', subtitle: 'Our credentials speak for themselves.', items: [] } as AchievementsContent },
   products: { label: 'Products / Shop', defaultContent: { title: 'Shop Fitness Essentials', subtitle: 'Premium supplements & gear.', cta_text: 'Explore Products', coupon_highlight: 'Use code GYM10 for 10% off', banner_images: [], items: [] } as ProductsContent },
+  popup: { label: 'Announcement Popup', defaultContent: { is_enabled: false, title: 'Limited Time Offer', message: 'Join today and unlock exclusive savings.', cta_text: 'Join Now', cta_link: '#lead-form', image_url: '', theme: 'gradient' } as PopupContent },
 };
 
-export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader', 'stats', 'footer_social', 'supplements', 'achievements', 'products'];
+export const ALL_SECTION_KEYS: SectionKey[] = ['hero', 'popup', 'pricing', 'services', 'equipment', 'trainers', 'testimonials', 'reviews', 'gallery', 'branches', 'orbit', 'navbar', 'loader', 'stats', 'footer_social', 'supplements', 'achievements', 'products'];
 
 export function useWebsiteContent() {
   const { toast } = useToast();

@@ -1,7 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
-  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw, ShieldCheck, UserCog,
+  LayoutDashboard, Users, CreditCard, UserPlus, Receipt, Globe, Settings, Dumbbell, Package, MessageCircle, Sparkles, BarChart3, FileText, Trash2, RefreshCw, ShieldCheck, UserCog, Building2, Network,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { NavLink } from '@/components/NavLink';
@@ -13,23 +13,27 @@ import { useGymSettings } from '@/hooks/useGymSettings';
 import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
 import { isOwnerLike, type Module } from '@/demo/permissions';
+import { getActiveSuperOwnerVendor, setActiveSuperOwnerVendor } from '@/demo/superOwnerService';
+import { canSuperOwnerAccess, type SuperOwnerModule } from '@/demo/superOwnerPermissions';
 
-type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean };
+type NavItem = { title: string; url: string; icon: any; module?: Module; ownerOnly?: boolean; superAdminOnly?: boolean; superOwnerOnly?: boolean; hideForSuperOwner?: boolean };
 
 const navItems: NavItem[] = [
-  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard, module: 'dashboard' },
+  { title: 'Super Owner Dashboard', url: '/app/super-owner-dashboard', icon: Network, superOwnerOnly: true },
+  { title: 'Super Owners', url: '/app/super-owners', icon: Building2, superAdminOnly: true },
+  { title: 'Dashboard', url: '/app/dashboard', icon: LayoutDashboard, module: 'dashboard', hideForSuperOwner: true },
   { title: 'Owner Summary', url: '/app/owner-summary', icon: Sparkles, ownerOnly: true },
-  { title: 'Members', url: '/app/members', icon: Users, module: 'members' },
-  { title: 'Plans', url: '/app/plans', icon: Package, module: 'plans' },
-  { title: 'Payments', url: '/app/payments', icon: CreditCard, module: 'payments' },
-  { title: 'Trainers', url: '/app/trainers', icon: UserCog, module: 'trainers' },
-  { title: 'Leads', url: '/app/leads', icon: UserPlus, module: 'leads' },
-  { title: 'Expenses', url: '/app/expenses', icon: Receipt, module: 'expenses' },
-  { title: 'Website', url: '/app/website', icon: Globe, module: 'website' },
-  { title: 'Contact', url: '/app/contact', icon: MessageCircle, module: 'settings' },
-  { title: 'Settings', url: '/app/settings', icon: Settings, module: 'settings' },
-  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText, module: 'settings' },
-  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2, module: 'recycle' },
+  { title: 'Members', url: '/app/members', icon: Users, module: 'members', hideForSuperOwner: true },
+  { title: 'Plans', url: '/app/plans', icon: Package, module: 'plans', hideForSuperOwner: true },
+  { title: 'Payments', url: '/app/payments', icon: CreditCard, module: 'payments', hideForSuperOwner: true },
+  { title: 'Trainers', url: '/app/trainers', icon: UserCog, module: 'trainers', hideForSuperOwner: true },
+  { title: 'Leads', url: '/app/leads', icon: UserPlus, module: 'leads', hideForSuperOwner: true },
+  { title: 'Expenses', url: '/app/expenses', icon: Receipt, module: 'expenses', hideForSuperOwner: true },
+  { title: 'Website', url: '/app/website', icon: Globe, module: 'website', hideForSuperOwner: true },
+  { title: 'Contact', url: '/app/contact', icon: MessageCircle, module: 'settings', hideForSuperOwner: true },
+  { title: 'Settings', url: '/app/settings', icon: Settings, module: 'settings', hideForSuperOwner: true },
+  { title: 'Invoice Template', url: '/app/settings/invoice', icon: FileText, module: 'settings', hideForSuperOwner: true },
+  { title: 'Recycle Bin', url: '/app/recycle', icon: Trash2, module: 'recycle', hideForSuperOwner: true },
   { title: 'Employee Access', url: '/app/employee-access', icon: ShieldCheck, ownerOnly: true },
 ];
 
@@ -40,19 +44,41 @@ export function AppSidebar() {
   const location = useLocation();
   const demo = useDemoModeOptional();
   const isDemo = demo?.isDemo ?? false;
-  const ownerLike = !isDemo || isOwnerLike(demo?.currentUser ?? null);
+  const role = demo?.currentUser?.role ?? null;
+  const isSuperAdmin = role === 'super_admin';
+  const isSuperOwner = role === 'super_owner';
+  const ownerLike = !isDemo || isOwnerLike(demo?.currentUser ?? null) || isSuperOwner;
 
-  // Filter sidebar items by RBAC. Owner/non-demo always see everything.
+  const activeVendor = isSuperOwner ? getActiveSuperOwnerVendor() : null;
+  const soUser = isSuperOwner ? demo?.currentUser ?? null : null;
+
+  // Map sidebar items to the super-owner module namespace (analytics is its own).
+  const soModuleFor = (item: NavItem): SuperOwnerModule | null => {
+    if (item.url === '/app/analytics' || item.url === '/app/owner-summary') return 'analytics';
+    if (!item.module) return null;
+    return (item.module as string) as SuperOwnerModule;
+  };
+
+  // Filter sidebar items by role + RBAC.
   const visibleItems = useMemo(() => {
     return navItems.filter(item => {
+      if (item.superAdminOnly) return isDemo && isSuperAdmin;
+      if (item.superOwnerOnly) return isDemo && isSuperOwner;
+      if (isSuperOwner) {
+        // In owner-view (gym selected) show modules permitted for that gym.
+        if (!activeVendor) return Boolean(item.superOwnerOnly);
+        const m = soModuleFor(item);
+        if (!m) return false;
+        return canSuperOwnerAccess(soUser?.id, activeVendor, m);
+      }
       if (item.ownerOnly) return ownerLike;
       if (!isDemo) return true;
-      if (ownerLike) return true;
+      if (isOwnerLike(demo?.currentUser ?? null)) return true;
       if (!item.module) return true;
       return demo?.can(item.module, 'view') ?? false;
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isDemo, ownerLike, demo?.changeTick, demo?.currentUser?.id]);
+  }, [isDemo, ownerLike, isSuperAdmin, isSuperOwner, activeVendor, demo?.changeTick, demo?.currentUser?.id]);
 
   // Auto-close mobile sidebar on route change
   useEffect(() => {
@@ -103,6 +129,21 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
+              {isSuperOwner && activeVendor && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    onClick={() => {
+                      // exit owner-view back to super-owner dashboard
+                      setActiveSuperOwnerVendor(null);
+                      window.location.href = '/app/super-owner-dashboard';
+                    }}
+                    className="hover:bg-sidebar-accent/50 text-primary"
+                  >
+                    <Network className="mr-2 h-4 w-4" />
+                    {!collapsed && <span>Exit Gym View</span>}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               {isDemo && (
                 <SidebarMenuItem>
                   <SidebarMenuButton

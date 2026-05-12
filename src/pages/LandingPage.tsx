@@ -28,6 +28,7 @@ import { FooterSocial } from '@/components/landing/FooterSocial';
 import { ProductsBanner } from '@/components/landing/ProductsBanner';
 import { YouTubeShortsSection } from '@/components/landing/YouTubeShortsSection';
 import { YouTubeShortsCarousel } from '@/components/landing/YouTubeShortsCarousel';
+import { WebsiteAnnouncementPopup } from '@/components/landing/WebsiteAnnouncementPopup';
 import * as ds from '@/services/dataService';
 
 function getYouTubeId(url: string): string | null {
@@ -184,6 +185,7 @@ export default function LandingPage() {
         supplements: getSection('supplements'),
         achievements: getSection('achievements'),
         products: getSection('products'),
+        popup: getSection('popup'),
       };
     },
   });
@@ -830,6 +832,7 @@ export default function LandingPage() {
       </footer>
 
       <FloatingContactButtons />
+      <WebsiteAnnouncementPopup row={data?.popup} />
     </div>
   );
 }

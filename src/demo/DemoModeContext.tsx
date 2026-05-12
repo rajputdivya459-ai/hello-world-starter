@@ -61,7 +61,8 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
   const [currentUser, setCurrentUserState] = useState<DemoUser | null>(() => {
     const id = demoStore.getCurrentUserId();
     if (!id) return null;
-    return demoStore.getUsers().find(u => u.id === id) ?? null;
+    const all = [...demoStore.getUsers(), ...demoStore.getSuperOwners()];
+    return all.find(u => u.id === id) ?? null;
   });
   const [users, setUsers] = useState<DemoUser[]>(() => demoStore.getUsers());
   const [vendors, setVendors] = useState<Vendor[]>(() => demoStore.getVendors());
@@ -75,7 +76,8 @@ export function DemoModeProvider({ children }: { children: ReactNode }) {
     setUsers(demoStore.getUsers());
     setVendors(demoStore.getVendors());
     const id = demoStore.getCurrentUserId();
-    setCurrentUserState(id ? demoStore.getUsers().find(u => u.id === id) ?? null : null);
+    const all = [...demoStore.getUsers(), ...demoStore.getSuperOwners()];
+    setCurrentUserState(id ? all.find(u => u.id === id) ?? null : null);
     setChangeTick(t => t + 1);
   }, []);
 
