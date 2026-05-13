@@ -159,13 +159,13 @@ export function shouldUseDemo(): boolean {
 // ───────── Plans ─────────
 export async function getPlans() {
   await delay();
-  require('settings', 'view'); // plans visible everywhere — soft gate
+  require('plans', 'view');
   return scope(demoStore.getPlans()).map(adaptPlan);
 }
 
 export async function createPlan(p: { name: string; price: number; duration_days: number; category?: string }) {
   await delay();
-  require('settings', 'edit');
+  require('plans', 'edit');
   const plan: DemoPlan = {
     id: genId('plan'),
     vendor_id: activeVendorId(),
