@@ -181,7 +181,7 @@ export async function createPlan(p: { name: string; price: number; duration_days
 
 export async function updatePlan(id: string, p: { name: string; price: number; duration_days: number; category?: string }) {
   await delay();
-  require('settings', 'edit');
+  require('plans', 'edit');
   const all = demoStore.getPlans();
   const idx = all.findIndex(x => x.id === id);
   if (idx === -1) throw new Error('Plan not found');
@@ -193,7 +193,7 @@ export async function updatePlan(id: string, p: { name: string; price: number; d
 
 export async function deletePlan(id: string) {
   await delay();
-  require('settings', 'edit');
+  require('plans', 'edit');
   demoStore.setPlans(demoStore.getPlans().filter(x => x.id !== id));
   emitDemoChange();
 }
