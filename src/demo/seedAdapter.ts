@@ -10,6 +10,7 @@
  */
 import { seedDemoData, summarizeDataset } from '@/data/seedDemoData';
 import { demoStore, emitDemoChange } from './storage';
+import { auditDemoIntegrity } from './dataIntegrity';
 
 import {
   hydrateSuperOwnerPermissions,
@@ -51,6 +52,9 @@ export function loadDemoDataset(): LoadResult {
     allow_full_owner_view: p.full,
   }));
   hydrateSuperOwnerPermissions(rows);
+
+  // Dev-only sanity check: surface orphaned references / duplicate ids.
+  try { auditDemoIntegrity(); } catch (e) { /* never block demo load */ }
 
   emitDemoChange();
 
