@@ -442,7 +442,7 @@ export async function renewMembership(params: { memberId: string; planId: string
 // ───────── Dashboard / Analytics ─────────
 export async function getDashboardStats() {
   await delay();
-  require('reports', 'view');
+  require('dashboard', 'view');
   const today = todayStr();
   const monthStart = `${today.slice(0, 7)}-01`;
   const sevenDays = new Date(); sevenDays.setDate(sevenDays.getDate() + 7);
@@ -502,7 +502,7 @@ export async function getDashboardStats() {
 
 export async function getRevenueChart() {
   await delay();
-  require('reports', 'view');
+  require('dashboard', 'view');
   const payments = scope(demoStore.getPayments());
   const now = new Date();
   const months: { month: string; revenue: number }[] = [];
@@ -531,7 +531,7 @@ export function runRecycleCleanup() { return 0; }
 // ───────── Analytics (time-range) ─────────
 export async function getAnalytics(range: { from: string; to: string }, granularity: 'day' | 'month' = 'day') {
   await delay();
-  require('reports', 'view');
+  require('dashboard', 'view');
   const members = scope(demoStore.getMembers());
   const payments = scope(demoStore.getPayments());
   const expenses = scope(demoStore.getExpenses());
@@ -654,13 +654,13 @@ import type { Trainer, TrainerAssignment, TrainerSession } from '@/data/seedDemo
 
 export async function getTrainers() {
   await delay();
-  require('trainers' as any, 'view');
+  require('trainers', 'view');
   return scope(demoStore.getTrainers()).sort((a, b) => a.name.localeCompare(b.name));
 }
 
 export async function createTrainer(t: { name: string; phone: string; specialization: string; experience: number; is_active?: boolean }) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   const row: Trainer = {
     id: genId('trainer'),
     vendor_id: activeVendorId(),
@@ -675,7 +675,7 @@ export async function createTrainer(t: { name: string; phone: string; specializa
 
 export async function updateTrainer(id: string, patch: Partial<Pick<Trainer, 'name' | 'phone' | 'specialization' | 'experience' | 'is_active'>>) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   const all = demoStore.getTrainers();
   const idx = all.findIndex(x => x.id === id);
   if (idx === -1) throw new Error('Trainer not found');
@@ -687,7 +687,7 @@ export async function updateTrainer(id: string, patch: Partial<Pick<Trainer, 'na
 
 export async function deleteTrainer(id: string) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   const assigns = demoStore.getTrainerAssignments();
   if (assigns.some(a => a.trainer_id === id && a.sessions_completed < a.total_sessions)) {
     throw new Error('Cannot delete trainer with active assignments');
@@ -698,13 +698,13 @@ export async function deleteTrainer(id: string) {
 
 export async function getTrainerAssignments() {
   await delay();
-  require('trainers' as any, 'view');
+  require('trainers', 'view');
   return scope(demoStore.getTrainerAssignments()).sort((a, b) => b.created_at.localeCompare(a.created_at));
 }
 
 export async function createTrainerAssignment(a: { trainer_id: string; member_id: string; total_sessions: number; price: number; start_date: string; end_date: string }) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   if (a.total_sessions <= 0) throw new Error('Total sessions must be > 0');
   if (a.price < 0) throw new Error('Price must be ≥ 0');
   const all = demoStore.getTrainerAssignments();
@@ -744,7 +744,7 @@ export async function createTrainerAssignment(a: { trainer_id: string; member_id
 
 export async function deleteTrainerAssignment(id: string) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   demoStore.setTrainerAssignments(demoStore.getTrainerAssignments().filter(x => x.id !== id));
   demoStore.setTrainerSessions(demoStore.getTrainerSessions().filter(x => x.assignment_id !== id));
   emitDemoChange();
@@ -752,13 +752,13 @@ export async function deleteTrainerAssignment(id: string) {
 
 export async function getTrainerSessions() {
   await delay();
-  require('trainers' as any, 'view');
+  require('trainers', 'view');
   return scope(demoStore.getTrainerSessions()).sort((a, b) => b.date.localeCompare(a.date));
 }
 
 export async function markTrainerSession(params: { assignment_id: string; status: 'completed' | 'missed'; date?: string }) {
   await delay();
-  require('trainers' as any, 'edit');
+  require('trainers', 'edit');
   const all = demoStore.getTrainerAssignments();
   const idx = all.findIndex(x => x.id === params.assignment_id);
   if (idx === -1) throw new Error('Assignment not found');
