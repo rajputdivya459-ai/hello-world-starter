@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Dumbbell, Menu, X } from 'lucide-react';
+import { Dumbbell, Menu, X, LogOut, LayoutDashboard, LogIn, UserPlus } from 'lucide-react';
+import { useGymAuth } from '@/contexts/GymAuthContext';
 
 export interface NavbarConfig {
   logo_url?: string;
@@ -28,12 +29,16 @@ export function PublicNavbar({ config, brandName = 'GymOS', brandLogo, navLinks,
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const { isAuthenticated, logout } = useGymAuth();
+  const navigate = useNavigate();
 
   const logo = config?.logo_url || brandLogo;
   const name = config?.brand_name || brandName;
   const ctaText = config?.cta_text || 'Join Now';
   const ctaLink = config?.cta_link || 'lead-form';
   const showDashboard = config?.show_dashboard_link !== false;
+
+  const handleLogout = () => { logout(); navigate('/'); };
 
   useEffect(() => {
     setMounted(true);
@@ -102,16 +107,31 @@ export function PublicNavbar({ config, brandName = 'GymOS', brandLogo, navLinks,
           >
             {ctaText}
           </Button>
-          {showDashboard && (
+          {showDashboard && isAuthenticated && (
             <Link to="/app/dashboard">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-10 px-4 text-ws-text hover:text-ws-text hover:bg-ws-border-dim rounded-xl transition-all duration-200"
-              >
-                Dashboard
+              <Button size="sm" variant="ghost" className="h-10 px-4 text-ws-text hover:text-ws-text hover:bg-ws-border-dim rounded-xl gap-1.5">
+                <LayoutDashboard className="h-4 w-4" /> Dashboard
               </Button>
             </Link>
+          )}
+          {isAuthenticated ? (
+            <Button size="sm" variant="ghost" onClick={handleLogout}
+              className="h-10 px-4 text-ws-text hover:text-ws-text hover:bg-ws-border-dim rounded-xl gap-1.5">
+              <LogOut className="h-4 w-4" /> Logout
+            </Button>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button size="sm" variant="ghost" className="h-10 px-4 text-ws-text hover:text-ws-text hover:bg-ws-border-dim rounded-xl gap-1.5">
+                  <LogIn className="h-4 w-4" /> Login
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button size="sm" variant="outline" className="h-10 px-4 rounded-xl gap-1.5">
+                  <UserPlus className="h-4 w-4" /> Register
+                </Button>
+              </Link>
+            </>
           )}
         </div>
 
@@ -155,12 +175,31 @@ export function PublicNavbar({ config, brandName = 'GymOS', brandLogo, navLinks,
             >
               {ctaText}
             </Button>
-            {showDashboard && (
+            {showDashboard && isAuthenticated && (
               <Link to="/app/dashboard" className="block">
-                <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim">
-                  Dashboard
+                <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim gap-2">
+                  <LayoutDashboard className="h-4 w-4" /> Dashboard
                 </Button>
               </Link>
+            )}
+            {isAuthenticated ? (
+              <Button variant="outline" onClick={handleLogout}
+                className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label hover:bg-ws-border-dim gap-2">
+                <LogOut className="h-4 w-4" /> Logout
+              </Button>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link to="/login" className="block">
+                  <Button variant="outline" className="w-full h-12 rounded-xl border-ws-border bg-transparent text-ws-text-label gap-2">
+                    <LogIn className="h-4 w-4" /> Login
+                  </Button>
+                </Link>
+                <Link to="/register" className="block">
+                  <Button className="w-full h-12 rounded-xl gap-2">
+                    <UserPlus className="h-4 w-4" /> Register
+                  </Button>
+                </Link>
+              </div>
             )}
           </div>
         </div>

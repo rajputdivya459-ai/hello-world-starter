@@ -41,6 +41,12 @@ import TrainersPage from "./pages/TrainersPage";
 import TrainerDetailPage from "./pages/TrainerDetailPage";
 import SuperOwnerDashboardPage from "./pages/SuperOwnerDashboardPage";
 import SuperOwnersAdminPage from "./pages/SuperOwnersAdminPage";
+import LoginPage from "./pages/auth/LoginPage";
+import RegisterPage from "./pages/auth/RegisterPage";
+import ForgotPasswordPage from "./pages/auth/ForgotPasswordPage";
+import AccessRestrictedPage from "./pages/auth/AccessRestrictedPage";
+import { GymAuthProvider } from "./contexts/GymAuthContext";
+import { RequireAuth } from "./components/auth/RequireAuth";
 import { useEffect } from "react";
 import { runRecycleCleanup } from "./services/dataService";
 
@@ -97,23 +103,29 @@ const App = () => {
       <Toaster />
       <BrowserRouter>
         <DemoModeProvider>
-          <DemoQuerySync />
-          <BrandingProvider>
-            <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/gallery" element={<GalleryPage />} />
-            <Route path="/plans" element={<PublicPlansPage />} />
-            <Route path="/branches" element={<PublicBranchesPage />} />
-            <Route path="/services" element={<PublicServicesPage />} />
-            <Route path="/trainers" element={<PublicTrainersPage />} />
-            <Route path="/equipment" element={<PublicEquipmentPage />} />
-            <Route path="/testimonials" element={<PublicTestimonialsPage />} />
-            <Route path="/products" element={<PublicProductsPage />} />
-            <Route path="/products/:id" element={<PublicProductDetailPage />} />
-            <Route path="/app/*" element={<AppLayout />} />
-            <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrandingProvider>
+          <GymAuthProvider>
+            <DemoQuerySync />
+            <BrandingProvider>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/gallery" element={<GalleryPage />} />
+                <Route path="/plans" element={<PublicPlansPage />} />
+                <Route path="/branches" element={<PublicBranchesPage />} />
+                <Route path="/services" element={<PublicServicesPage />} />
+                <Route path="/trainers" element={<PublicTrainersPage />} />
+                <Route path="/equipment" element={<PublicEquipmentPage />} />
+                <Route path="/testimonials" element={<PublicTestimonialsPage />} />
+                <Route path="/products" element={<PublicProductsPage />} />
+                <Route path="/products/:id" element={<PublicProductDetailPage />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+                <Route path="/access-restricted" element={<AccessRestrictedPage />} />
+                <Route path="/app/*" element={<RequireAuth><AppLayout /></RequireAuth>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrandingProvider>
+          </GymAuthProvider>
         </DemoModeProvider>
       </BrowserRouter>
     </TooltipProvider>

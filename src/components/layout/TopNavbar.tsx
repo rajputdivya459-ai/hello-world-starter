@@ -3,7 +3,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Bell, Home, Database, LogOut } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import {
@@ -24,7 +24,7 @@ import {
 } from '@/components/ui/tooltip';
 import { useDemoModeOptional } from '@/demo/DemoModeContext';
 import { loadDemoDataset } from '@/demo/seedAdapter';
-import { RoleSwitcher } from '@/demo/RoleSwitcher';
+import { useGymAuth } from '@/contexts/GymAuthContext';
 
 function initialsOf(name?: string | null): string {
   if (!name) return 'RS';
@@ -38,7 +38,10 @@ export function TopNavbar() {
   const isDemo = demo?.isDemo ?? false;
   const currentUser = demo?.currentUser ?? null;
   const vendor = demo?.vendor ?? null;
+  const auth = useGymAuth();
+  const navigate = useNavigate();
   const [confirmExit, setConfirmExit] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
 
   const handleLoadDemo = () => {
     const wasActive = isDemo;
@@ -59,7 +62,14 @@ export function TopNavbar() {
     toast.success('Exited demo mode');
   };
 
-  const initials = isDemo ? initialsOf(currentUser?.name) : 'RS';
+  const handleLogout = () => {
+    auth.logout();
+    setConfirmLogout(false);
+    toast.success('Signed out');
+    navigate('/');
+  };
+
+  const initials = initialsOf(currentUser?.name ?? auth.user?.name);
 
   return (
     <header className="h-14 border-b border-border flex items-center justify-between px-3 sm:px-4 bg-card gap-2">
@@ -87,7 +97,6 @@ export function TopNavbar() {
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         {isDemo ? (
           <>
-            <RoleSwitcher />
             <Button
               variant="outline"
               size="sm"
@@ -104,7 +113,7 @@ export function TopNavbar() {
               onClick={() => setConfirmExit(true)}
               className="h-9 gap-1.5"
             >
-              <LogOut className="h-4 w-4" />
+              <Database className="h-4 w-4" />
               <span className="hidden sm:inline text-xs">Exit Demo</span>
             </Button>
           </>
@@ -119,6 +128,17 @@ export function TopNavbar() {
             <span className="hidden sm:inline text-xs">Load Demo Data</span>
           </Button>
         )}
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setConfirmLogout(true)}
+          className="h-9 gap-1.5"
+          title="Sign out"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="hidden sm:inline text-xs">Logout</span>
+        </Button>
 
         <Button variant="ghost" size="icon" className="text-muted-foreground h-9 w-9">
           <Bell className="h-4 w-4" />
@@ -167,6 +187,21 @@ export function TopNavbar() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={handleExitDemo}>Exit Demo</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog open={confirmLogout} onOpenChange={setConfirmLogout}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sign out?</AlertDialogTitle>
+            <AlertDialogDescription>
+              You will need to sign in again to access the dashboard.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={handleLogout}>Sign out</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
