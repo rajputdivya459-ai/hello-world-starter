@@ -14,38 +14,102 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_users: {
+        Row: {
+          auth_user_id: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          is_active: boolean
+          is_demo: boolean
+          phone: string | null
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          auth_user_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          phone?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          auth_user_id?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          phone?: string | null
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "app_users_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       branches: {
         Row: {
           contact: string | null
           created_at: string | null
           id: string
           image_url: string | null
+          is_demo: boolean
           location: string | null
           name: string
           sort_order: number | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           contact?: string | null
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           location?: string | null
           name: string
           sort_order?: number | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           contact?: string | null
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           location?: string | null
           name?: string
           sort_order?: number | null
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "branches_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       contact_settings: {
         Row: {
@@ -53,8 +117,10 @@ export type Database = {
           gym_id: string | null
           id: string
           instagram_url: string | null
+          is_demo: boolean
           updated_at: string | null
           user_id: string
+          vendor_id: string | null
           whatsapp_message: string | null
           whatsapp_number: string | null
         }
@@ -63,8 +129,10 @@ export type Database = {
           gym_id?: string | null
           id?: string
           instagram_url?: string | null
+          is_demo?: boolean
           updated_at?: string | null
           user_id: string
+          vendor_id?: string | null
           whatsapp_message?: string | null
           whatsapp_number?: string | null
         }
@@ -73,12 +141,22 @@ export type Database = {
           gym_id?: string | null
           id?: string
           instagram_url?: string | null
+          is_demo?: boolean
           updated_at?: string | null
           user_id?: string
+          vendor_id?: string | null
           whatsapp_message?: string | null
           whatsapp_number?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "contact_settings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       expenses: {
         Row: {
@@ -87,8 +165,11 @@ export type Database = {
           created_at: string | null
           expense_date: string
           id: string
+          is_demo: boolean
           title: string
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           amount?: number
@@ -96,8 +177,11 @@ export type Database = {
           created_at?: string | null
           expense_date: string
           id?: string
+          is_demo?: boolean
           title: string
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           amount?: number
@@ -105,10 +189,21 @@ export type Database = {
           created_at?: string | null
           expense_date?: string
           id?: string
+          is_demo?: boolean
           title?: string
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "expenses_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gallery: {
         Row: {
@@ -116,59 +211,90 @@ export type Database = {
           created_at: string | null
           id: string
           image_url: string
+          is_demo: boolean
           sort_order: number | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           caption?: string | null
           created_at?: string | null
           id?: string
           image_url: string
+          is_demo?: boolean
           sort_order?: number | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           caption?: string | null
           created_at?: string | null
           id?: string
           image_url?: string
+          is_demo?: boolean
           sort_order?: number | null
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gallery_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gym_settings: {
         Row: {
           created_at: string | null
           gym_name: string | null
           id: string
+          is_demo: boolean
           logo_url: string | null
           primary_color: string | null
           secondary_color: string | null
           updated_at: string | null
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
           gym_name?: string | null
           id?: string
+          is_demo?: boolean
           logo_url?: string | null
           primary_color?: string | null
           secondary_color?: string | null
           updated_at?: string | null
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
           gym_name?: string | null
           id?: string
+          is_demo?: boolean
           logo_url?: string | null
           primary_color?: string | null
           secondary_color?: string | null
           updated_at?: string | null
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "gym_settings_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       gyms: {
         Row: {
@@ -188,72 +314,157 @@ export type Database = {
         }
         Relationships: []
       }
+      invoices: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          invoice_number: string | null
+          is_demo: boolean
+          issued_date: string
+          member_id: string | null
+          metadata: Json
+          payment_id: string | null
+          pdf_url: string | null
+          status: string
+          tax: number
+          total: number
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          is_demo?: boolean
+          issued_date?: string
+          member_id?: string | null
+          metadata?: Json
+          payment_id?: string | null
+          pdf_url?: string | null
+          status?: string
+          tax?: number
+          total?: number
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          is_demo?: boolean
+          issued_date?: string
+          member_id?: string | null
+          metadata?: Json
+          payment_id?: string | null
+          pdf_url?: string | null
+          status?: string
+          tax?: number
+          total?: number
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoices_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string | null
           fitness_goal: string | null
           id: string
+          is_demo: boolean
           name: string
           phone: string
           status: string | null
           updated_at: string | null
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
           fitness_goal?: string | null
           id?: string
+          is_demo?: boolean
           name: string
           phone: string
           status?: string | null
           updated_at?: string | null
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
           fitness_goal?: string | null
           id?: string
+          is_demo?: boolean
           name?: string
           phone?: string
           status?: string | null
           updated_at?: string | null
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "leads_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       members: {
         Row: {
           created_at: string | null
           expiry_date: string
           id: string
+          is_demo: boolean
           name: string
           phone: string
           plan_id: string | null
           start_date: string
           status: string | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
           expiry_date: string
           id?: string
+          is_demo?: boolean
           name: string
           phone: string
           plan_id?: string | null
           start_date: string
           status?: string | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
           expiry_date?: string
           id?: string
+          is_demo?: boolean
           name?: string
           phone?: string
           plan_id?: string | null
           start_date?: string
           status?: string | null
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -263,6 +474,63 @@ export type Database = {
             referencedRelation: "plans"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "members_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          created_at: string
+          id: string
+          is_demo: boolean
+          is_read: boolean
+          link: string | null
+          metadata: Json
+          title: string
+          type: string
+          user_id: string
+          vendor_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_read?: boolean
+          link?: string | null
+          metadata?: Json
+          title: string
+          type: string
+          user_id: string
+          vendor_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_read?: boolean
+          link?: string | null
+          metadata?: Json
+          title?: string
+          type?: string
+          user_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
         ]
       }
       payments: {
@@ -270,34 +538,43 @@ export type Database = {
           amount: number
           created_at: string | null
           id: string
+          is_demo: boolean
           member_id: string
           method: string
           note: string | null
           payment_date: string
           status: string
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           amount?: number
           created_at?: string | null
           id?: string
+          is_demo?: boolean
           member_id: string
           method?: string
           note?: string | null
           payment_date: string
           status?: string
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           amount?: number
           created_at?: string | null
           id?: string
+          is_demo?: boolean
           member_id?: string
           method?: string
           note?: string | null
           payment_date?: string
           status?: string
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
         Relationships: [
           {
@@ -305,6 +582,13 @@ export type Database = {
             columns: ["member_id"]
             isOneToOne: false
             referencedRelation: "members"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payments_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
             referencedColumns: ["id"]
           },
         ]
@@ -316,10 +600,13 @@ export type Database = {
           created_at: string | null
           duration_days: number
           id: string
+          is_demo: boolean
           is_highlighted: boolean | null
           name: string
           price: number
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           benefits?: string[] | null
@@ -327,10 +614,13 @@ export type Database = {
           created_at?: string | null
           duration_days?: number
           id?: string
+          is_demo?: boolean
           is_highlighted?: boolean | null
           name: string
           price?: number
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           benefits?: string[] | null
@@ -338,12 +628,79 @@ export type Database = {
           created_at?: string | null
           duration_days?: number
           id?: string
+          is_demo?: boolean
           is_highlighted?: boolean | null
           name?: string
           price?: number
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "plans_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      popups: {
+        Row: {
+          body: string | null
+          created_at: string
+          cta_label: string | null
+          cta_url: string | null
+          ends_at: string | null
+          id: string
+          image_url: string | null
+          is_demo: boolean
+          is_visible: boolean
+          starts_at: string | null
+          title: string
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_demo?: boolean
+          is_visible?: boolean
+          starts_at?: string | null
+          title: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          cta_label?: string | null
+          cta_url?: string | null
+          ends_at?: string | null
+          id?: string
+          image_url?: string | null
+          is_demo?: boolean
+          is_visible?: boolean
+          starts_at?: string | null
+          title?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "popups_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -375,35 +732,189 @@ export type Database = {
         }
         Relationships: []
       }
+      recycle_bin: {
+        Row: {
+          deleted_at: string
+          deleted_by: string | null
+          entity_id: string
+          entity_type: string
+          expires_at: string
+          id: string
+          is_demo: boolean
+          payload: Json
+          vendor_id: string | null
+        }
+        Insert: {
+          deleted_at?: string
+          deleted_by?: string | null
+          entity_id: string
+          entity_type: string
+          expires_at?: string
+          id?: string
+          is_demo?: boolean
+          payload: Json
+          vendor_id?: string | null
+        }
+        Update: {
+          deleted_at?: string
+          deleted_by?: string | null
+          entity_id?: string
+          entity_type?: string
+          expires_at?: string
+          id?: string
+          is_demo?: boolean
+          payload?: Json
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recycle_bin_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reviews: {
         Row: {
           created_at: string | null
           id: string
           image_url: string | null
+          is_demo: boolean
           name: string
           rating: number
           sort_order: number | null
           text: string | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name: string
           rating?: number
           sort_order?: number | null
           text?: string | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name?: string
           rating?: number
           sort_order?: number | null
           text?: string | null
+          updated_at?: string
+          user_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      role_permissions: {
+        Row: {
+          action: string
+          allowed: boolean
+          created_at: string
+          id: string
+          module: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          action: string
+          allowed?: boolean
+          created_at?: string
+          id?: string
+          module: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          action?: string
+          allowed?: boolean
+          created_at?: string
+          id?: string
+          module?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: []
+      }
+      super_owner_vendor_access: {
+        Row: {
+          created_at: string
+          id: string
+          permissions: Json
+          super_owner_id: string
+          vendor_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permissions?: Json
+          super_owner_id: string
+          vendor_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permissions?: Json
+          super_owner_id?: string
+          vendor_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "super_owner_vendor_access_super_owner_id_fkey"
+            columns: ["super_owner_id"]
+            isOneToOne: false
+            referencedRelation: "super_owners"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "super_owner_vendor_access_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      super_owners: {
+        Row: {
+          created_at: string
+          full_name: string | null
+          id: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          full_name?: string | null
+          id?: string
+          is_active?: boolean
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -413,61 +924,267 @@ export type Database = {
           content: string | null
           created_at: string | null
           id: string
+          is_demo: boolean
           is_visible: boolean | null
           name: string
           sort_order: number | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
           video_url: string | null
         }
         Insert: {
           content?: string | null
           created_at?: string | null
           id?: string
+          is_demo?: boolean
           is_visible?: boolean | null
           name: string
           sort_order?: number | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
           video_url?: string | null
         }
         Update: {
           content?: string | null
           created_at?: string | null
           id?: string
+          is_demo?: boolean
           is_visible?: boolean | null
           name?: string
           sort_order?: number | null
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "testimonials_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trainer_assignments: {
+        Row: {
+          created_at: string
+          end_date: string | null
+          id: string
+          is_demo: boolean
+          member_id: string
+          notes: string | null
+          sessions_completed: number
+          start_date: string
+          status: string
+          total_sessions: number
+          trainer_id: string
+          updated_at: string
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_demo?: boolean
+          member_id: string
+          notes?: string | null
+          sessions_completed?: number
+          start_date?: string
+          status?: string
+          total_sessions?: number
+          trainer_id: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          end_date?: string | null
+          id?: string
+          is_demo?: boolean
+          member_id?: string
+          notes?: string | null
+          sessions_completed?: number
+          start_date?: string
+          status?: string
+          total_sessions?: number
+          trainer_id?: string
+          updated_at?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_assignments_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      trainer_sessions: {
+        Row: {
+          assignment_id: string
+          created_at: string
+          id: string
+          is_demo: boolean
+          notes: string | null
+          session_date: string
+          status: string
+          vendor_id: string | null
+        }
+        Insert: {
+          assignment_id: string
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          notes?: string | null
+          session_date?: string
+          status?: string
+          vendor_id?: string | null
+        }
+        Update: {
+          assignment_id?: string
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          notes?: string | null
+          session_date?: string
+          status?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainer_sessions_assignment_id_fkey"
+            columns: ["assignment_id"]
+            isOneToOne: false
+            referencedRelation: "trainer_assignments"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trainer_sessions_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trainers: {
         Row: {
           created_at: string | null
           id: string
           image_url: string | null
+          is_demo: boolean
           name: string
           sort_order: number | null
           specialization: string | null
+          updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name: string
           sort_order?: number | null
           specialization?: string | null
+          updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           name?: string
           sort_order?: number | null
           specialization?: string | null
+          updated_at?: string
           user_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trainers_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+          vendor_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+          vendor_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+          vendor_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      vendors: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          is_demo: boolean
+          metadata: Json
+          name: string
+          owner_user_id: string | null
+          slug: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          metadata?: Json
+          name: string
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          is_demo?: boolean
+          metadata?: Json
+          name?: string
+          owner_user_id?: string | null
+          slug?: string | null
+          updated_at?: string
         }
         Relationships: []
       }
@@ -476,30 +1193,44 @@ export type Database = {
           content: Json
           created_at: string
           id: string
+          is_demo: boolean
           is_enabled: boolean
           section_key: string
           updated_at: string
           user_id: string
+          vendor_id: string | null
         }
         Insert: {
           content?: Json
           created_at?: string
           id?: string
+          is_demo?: boolean
           is_enabled?: boolean
           section_key: string
           updated_at?: string
           user_id: string
+          vendor_id?: string | null
         }
         Update: {
           content?: Json
           created_at?: string
           id?: string
+          is_demo?: boolean
           is_enabled?: boolean
           section_key?: string
           updated_at?: string
           user_id?: string
+          vendor_id?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "website_content_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       website_sections: {
         Row: {
@@ -507,6 +1238,7 @@ export type Database = {
           created_at: string | null
           id: string
           image_url: string | null
+          is_demo: boolean
           is_visible: boolean | null
           section_type: string
           sort_order: number | null
@@ -514,6 +1246,7 @@ export type Database = {
           title: string | null
           updated_at: string | null
           user_id: string
+          vendor_id: string | null
           video_url: string | null
         }
         Insert: {
@@ -521,6 +1254,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           is_visible?: boolean | null
           section_type: string
           sort_order?: number | null
@@ -528,6 +1262,7 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_id: string
+          vendor_id?: string | null
           video_url?: string | null
         }
         Update: {
@@ -535,6 +1270,7 @@ export type Database = {
           created_at?: string | null
           id?: string
           image_url?: string | null
+          is_demo?: boolean
           is_visible?: boolean | null
           section_type?: string
           sort_order?: number | null
@@ -542,19 +1278,124 @@ export type Database = {
           title?: string | null
           updated_at?: string | null
           user_id?: string
+          vendor_id?: string | null
           video_url?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "website_sections_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      youtube_shorts: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          is_visible: boolean
+          sort_order: number
+          title: string | null
+          vendor_id: string | null
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          title?: string | null
+          vendor_id?: string | null
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          title?: string | null
+          vendor_id?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "youtube_shorts_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      youtube_testimonials: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          is_visible: boolean
+          sort_order: number
+          thumbnail_url: string | null
+          title: string | null
+          vendor_id: string | null
+          video_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string | null
+          vendor_id?: string | null
+          video_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          is_visible?: boolean
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string | null
+          vendor_id?: string | null
+          video_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "youtube_testimonials_vendor_id_fkey"
+            columns: ["vendor_id"]
+            isOneToOne: false
+            referencedRelation: "vendors"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_access_vendor: {
+        Args: { _user_id: string; _vendor_id: string }
+        Returns: boolean
+      }
+      current_vendor_id: { Args: never; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "super_admin" | "super_owner" | "owner" | "employee"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -681,6 +1522,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["super_admin", "super_owner", "owner", "employee"],
+    },
   },
 } as const
